@@ -78,6 +78,7 @@ function init() {
   const playerGrid = document.querySelector('.playerGrid')
   const cpuGrid = document.querySelector('.cpuGrid')
   const gridBtns = document.querySelectorAll('.grid Button')
+
   const start = document.querySelector('.start')
   const playerShipBtns = document.querySelectorAll('.playerShips Button')
 
@@ -86,6 +87,11 @@ function init() {
   const playerCells = []
   const cpuCells = []
   let currentShip = {}
+  let currentShipLength = 0
+  let cellsRequiredToPlace = []
+  let direction = 'down'
+  let currentCell = 0
+
 
   // ? class for each ship direction?
   function createGrids() {
@@ -105,6 +111,8 @@ function init() {
     }
   }
 
+  // const playerGridBtns = playerCells.addEventListener('Button')
+
   // ! Executions
   // ? MIGHT ADD HITPOSITIONS[] TO SHIP[] AND PUSH INTO THIS AS HITS ARE MADE SO I CAN THEN USE ARRAY.LENGTH TO CHECK FOR DESTROYED SHIPS
   // ? Possibly use a timer to create a delay comp shot after player's shot
@@ -112,25 +120,86 @@ function init() {
   // start() -> select ship you wish to place' + on hover shadowPlacement()
   function begin() {
     placeCPUShips()
-    placePlayerShips()
   }
 
   function placePlayerShips() {
 
   }
 
+  function rotate(e) {
+    if (e.keyCode === 82 && direction === 'down') {
+      cellsRequiredToPlace = []
+      direction = 'left'
+      updateCellsRequired()
+    } else if (e.keyCode === 82 && direction === 'left') {
+      cellsRequiredToPlace = []
+      direction = 'up'
+      updateCellsRequired()
+    } else if (e.keyCode === 82 && direction === 'up') {
+      cellsRequiredToPlace = []
+      direction = 'right'
+      updateCellsRequired()
+    } else if (e.keyCode === 82 && direction === 'right') {
+      cellsRequiredToPlace = []
+      direction = 'down'
+      updateCellsRequired()
+    }
+  }
+
+  function updateCurrentCell() {
+    currentCell = parseInt(this.dataset.index)
+  }
+
   function selectShip() {
     const shipIndex = parseInt(this.value) - 1
     currentShip = playerShips[shipIndex]
     console.log(currentShip)
+    currentShipLength = currentShip.length
+    console.log(currentShipLength)
+  }
+
+  function clearSelection() {
+    cellsRequiredToPlace = []
+  }
+
+  function updateCellsRequired() {
+    if (direction === 'down') {
+      requiredCellsDown(currentCell, currentShipLength, cellsRequiredToPlace)
+      console.log(cellsRequiredToPlace)
+    } else if (direction === 'right') {
+      requiredCellsRight(currentCell, currentShipLength, cellsRequiredToPlace)
+      console.log(cellsRequiredToPlace)
+    } else if (direction === 'up') {
+      requiredCellsUp(currentCell, currentShipLength, cellsRequiredToPlace)
+      console.log(cellsRequiredToPlace)
+    } else {
+      requiredCellsLeft(currentCell, currentShipLength, cellsRequiredToPlace)
+      console.log(cellsRequiredToPlace)
+    }
+  }
+
+
+
+  function placeShip() {
+    console.log(currentShipLength)
+    console.log(this.innerText)
+    checkPlayerCellAvailability()
+  }
+
+  function checkPlayerCellAvailability() {
+
   }
 
   // player press r to rotate ship, rotateShip()
-  
+
   // player clicks to select ship to place, forEach
   playerShipBtns.forEach(btn => btn.addEventListener('click', selectShip))
 
   // player hovers to place ship, shadowPlacement()
+
+
+  // playerGridBtns.forEach(btn => console.log(btn.value))
+
   // player clicks to place ship, placesShip()
 
   // computerShoots() if compPreviousShotHit >= 0
@@ -403,7 +472,7 @@ function init() {
     enemyShips[i].position = place
   }
 
-  
+
   // Pushes cells to be taken up by ship to occupied cells array
   function pushToOccupiedCellsCPU(possiblePositon) {
     for (let i = 0; i < possiblePositon.length; i++) {
@@ -411,6 +480,16 @@ function init() {
     }
 
   }
+  // playerGridBtns.forEach(btn => console.log(btn.className))
+  playerCells.forEach(btn => {
+    btn.addEventListener('click', placeShip)
+  })
+  playerCells.forEach(btn => {
+    btn.addEventListener('mouseover', updateCellsRequired)
+    btn.addEventListener('mouseover', updateCurrentCell)
+    btn.addEventListener('mouseleave', clearSelection)
+  })
+  document.addEventListener('keydown', rotate)
 }
 
 window.addEventListener('DOMContentLoaded', init)
