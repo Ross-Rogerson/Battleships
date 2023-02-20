@@ -16,70 +16,74 @@ function init() {
     name: 'large',
     length: 4,
     position: [],
-    hitsTaken: [],
+    hitsTaken: 0,
   }
   const cpuMediumBoat = {
     name: 'medium',
     length: 3,
     position: [],
-    hitsTaken: [],
+    hitsTaken: 0,
   }
   const cpuMediumBoat2 = {
     name: 'medium2',
     length: 3,
     position: [],
-    hitsTaken: [],
+    hitsTaken: 0,
   }
   const cpuSmallBoat = {
     name: 'small',
     length: 2,
     position: [],
-    hitsTaken: [],
+    hitsTaken: 0,
   }
   const cpuXSmallBoat = {
     name: 'xsmall',
     length: 1,
     position: [],
-    hitsTaken: [],
+    hitsTaken: 0,
   }
   const playerLargeBoat = {
     name: 'large',
     length: 4,
     position: [],
-    hitsTaken: [],
+    hitsTaken: 0,
   }
   const playerMediumBoat = {
     name: 'medium',
     length: 3,
     position: [],
-    hitsTaken: [],
+    hitsTaken: 0,
   }
   const playerMediumBoat2 = {
     name: 'medium2',
     length: 3,
-    position: [],
+    position: 0,
     hitsTaken: [],
   }
   const playerSmallBoat = {
     name: 'small',
     length: 2,
-    position: [],
+    position: 0,
     hitsTaken: [],
   }
   const playerXSmallBoat = {
     name: 'xsmall',
     length: 1,
     position: [],
-    hitsTaken: [],
+    hitsTaken: 0,
   }
   const enemyShips = [cpuLargeBoat, cpuMediumBoat, cpuMediumBoat2, cpuSmallBoat, cpuXSmallBoat]
   const playerShips = [playerLargeBoat, playerMediumBoat, playerMediumBoat2, playerSmallBoat, playerXSmallBoat]
   const occupiedCellsCPU = []
   const occupiedCellsPlayer = []
+  const playerHitsTaken = []
+  const cpuHitsTaken = []
   const playerGrid = document.querySelector('.playerGrid')
   const cpuGrid = document.querySelector('.cpuGrid')
 
   const start = document.querySelector('.start')
+  const reset = document.querySelector('.reset')
+  const forfeit = document.querySelector('.forfeit')
   const playerShipBtns = document.querySelectorAll('.playerShips Button')
 
   const width = 10
@@ -92,6 +96,8 @@ function init() {
   let cellsRequiredToPlace = []
   let direction = 'down'
   let currentCell = 0
+  let playerShot = 0
+  let playerShotResult = false
 
   // ? class for each ship direction?
   function createGrids() {
@@ -122,11 +128,14 @@ function init() {
 
   // start() -> select ship you wish to place' + on hover shadowPlacement()
   function begin() {
+    start.disabled = true
+    reset.disabled = false
+    forfeit.disabled = false
     placeCPUShips()
     unlockShipBtns()
   }
 
-  function unlockShipBtns () {
+  function unlockShipBtns() {
     playerShipBtns.forEach(btn => btn.disabled = false)
   }
 
@@ -209,21 +218,82 @@ function init() {
     if ((direction === 'up' || direction === 'down') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false) {
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
       playerShipBtns[currentShipIndex].disabled = true
-      console.log(playerShips[currentShipIndex])
       resetCurrentShip()
+      startBattle()
       console.log('ship was placed')
       console.log(occupiedCellsPlayer)
-      resetCurrentShip()
     } else if ((direction === 'left' || direction === 'right') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false && sameLine(cellsRequiredToPlace)) {
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
       playerShipBtns[currentShipIndex].disabled = true
-      console.log(playerShips[currentShipIndex])
       resetCurrentShip()
+      startBattle()
       console.log('ship was placed')
       console.log(occupiedCellsPlayer)
     } else {
       console.log('NOT PLACED')
     }
+  }
+
+  function startBattle() {
+    if (occupiedCellsPlayer.length === 13) {
+      removeOutline()
+      playerCells.forEach(btn => btn.disabled = true)
+      unlockEnemyGrid()
+    }
+  }
+
+  function fireShot() {
+    playerShot = parseInt(this.dataset.index)
+    playerShotResult = occupiedCellsCPU.includes(playerShot)
+    updateTargetCell()
+    // lockEnemyGrid()
+  }
+
+  function updateTargetCell() {
+    cpuCells[playerShot].classList.remove('normal')
+    if (playerShotResult) {
+      cpuCells[playerShot].classList.add('hit')
+      cpuHitsTaken.push(playerShot)
+      shipDestroyedCheck()
+      playerWinCheck()
+    } else {
+      cpuCells[playerShot].classList.add('miss')
+    }
+    cpuCells[playerShot].disabled = true
+  }
+
+  function shipDestroyedCheck() {
+    let searching = true
+    let iterate = 0
+    while (searching) {
+      const foundIndexOfShipHit = enemyShips[iterate].position.includes(playerShot)
+      if (foundIndexOfShipHit) {
+        enemyShips[iterate].hitsTaken++
+        if (enemyShips[iterate].hitsTaken >= parseInt(enemyShips[iterate].length)) {
+          console.log('ship destroyed')
+        }
+        searching = false
+      } else {
+        iterate++
+      }
+    }
+  }
+
+  function playerWinCheck () {
+    console.log(cpuHitsTaken.length)
+    if (cpuHitsTaken.length >= 13) {
+      lockEnemyGrid()
+      forfeit.disabled = true
+      console.log('Game Over')
+    }
+  }
+
+  function unlockEnemyGrid() {
+    cpuCells.forEach(btn => btn.disabled = false)
+  }
+
+  function lockEnemyGrid() {
+    cpuCells.forEach(btn => btn.disabled = true)
   }
 
   // function disableShipBtns() {
@@ -545,6 +615,17 @@ function init() {
     btn.addEventListener('click', placeShip)
   })
 
+  cpuCells.forEach(btn => {
+    btn.addEventListener('click', fireShot)
+  })
+
+  cpuCells.forEach(btn => btn.disabled = true)
+
+  // forfeit.addEventListener('click', giveUp)
+  forfeit.disable = true
+  // forfeit.addEventListener('click', clear)
+  reset.disable = true
+
   playerCells.forEach(btn => {
     btn.addEventListener('mouseover', updateCurrentCell)
     btn.addEventListener('mouseover', updateCellsRequired)
@@ -556,7 +637,6 @@ function init() {
   playerShipBtns.forEach(btn => btn.disabled = true)
 
   document.addEventListener('keydown', rotate)
-  console.log(playerCells)
 }
 
 window.addEventListener('DOMContentLoaded', init)

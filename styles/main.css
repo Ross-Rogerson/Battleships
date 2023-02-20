@@ -104,6 +104,22 @@ main {
   background-color: rgba(0.1, 0.1, 0.1, 0.001);
 }
 
+.hit {
+  border: 1px solid black;
+  flex-grow: 1;
+  height: 10%;
+  width: 10%;
+  background-color: red;
+}
+
+.miss {
+  border: 1px solid black;
+  flex-grow: 1;
+  height: 10%;
+  width: 10%;
+  background-color: navy;
+}
+
 
 .normal {
   border: 1px solid black;
