@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Battleships</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <script src="scripts/app.js" charset=“utf-8"></script>
+</head>
+
+<body>
+  <header>
+    <div class="avatarConatiner player"><img src="./assets/cat.png" alt="playerAvatar" class="playerAvatar"></div>
+    <section class="headingAndSpeech">
+      <h1>Battleships</h1>
+      <section class="speech">
+        <div class="playerSpeech">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum nulla autem amet
+          minus corrupti
+          harum ullam incidunt facere vero, dolor molestiae alias qui cupiditate possimus labore at
+        </div>
+        <div class="cpuSpeech">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eligendi doloremque molestiae
+          perspiciatis,
+          quasi quaerat maiores aperiam voluptatem sequi. Eaque modi vitae alias laboriosam facere</div>
+      </section>
+    </section>
+    <div class="avatarConatiner cpu"><img src="./assets/cat.png" alt="cpuAvatar" class="cpuAvatar"></div>
+  </header>
+  <main>
+    <section class="playerComponents">
+      <section class="grid playerGrid"></section>
+      <div class="ships playerShips">
+        <button class="boatLarge"></button>
+        <button class="boatMedium"></button>
+        <button class="boatMedium2"></button>
+        <button class="boatSmall"></button>
+        <button class="boatXSmall"></button>
+      </div>
+    </section>
+
+    <section class="setUp">
+      <div class="setUpButtons">
+        <button class="start">Start</button>
+        <button class="reset">Reset</button>
+        <button class="forfeit">Forfeit</button>
+      </div>
+    </section>
+
+    <section class="cpuComponents">
+      <section class="grid cpuGrid"></section>
+      <div class="ships cpuShips">
+        <div class="boatXSmall"></div>
+        <div class="boatSmall"></div>
+        <div class="boatMedium2"></div>
+        <div class="boatMedium"></div>
+        <div class="boatLarge"></div>
+      </div>
+    </section>
+  </main>
+</body>
+
+</html>
