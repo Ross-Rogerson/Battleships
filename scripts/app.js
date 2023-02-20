@@ -75,6 +75,7 @@ function init() {
   const enemyShips = [cpuLargeBoat, cpuMediumBoat, cpuMediumBoat2, cpuSmallBoat, cpuXSmallBoat]
   const playerShips = [playerLargeBoat, playerMediumBoat, playerMediumBoat2, playerSmallBoat, playerXSmallBoat]
   const occupiedCellsCPU = []
+  const occupiedCellsPlayer = []
   const playerGrid = document.querySelector('.playerGrid')
   const cpuGrid = document.querySelector('.cpuGrid')
   const gridBtns = document.querySelectorAll('.grid Button')
@@ -88,10 +89,10 @@ function init() {
   const cpuCells = []
   let currentShip = {}
   let currentShipLength = 0
+  let currentShipIndex = 0
   let cellsRequiredToPlace = []
   let direction = 'down'
   let currentCell = 0
-
 
   // ? class for each ship direction?
   function createGrids() {
@@ -122,10 +123,6 @@ function init() {
     placeCPUShips()
   }
 
-  function placePlayerShips() {
-
-  }
-
   function rotate(e) {
     if (e.keyCode === 82 && direction === 'down') {
       cellsRequiredToPlace = []
@@ -151,8 +148,8 @@ function init() {
   }
 
   function selectShip() {
-    const shipIndex = parseInt(this.value) - 1
-    currentShip = playerShips[shipIndex]
+    currentShipIndex = parseInt(this.value) - 1
+    currentShip = playerShips[currentShipIndex]
     console.log(currentShip)
     currentShipLength = currentShip.length
     console.log(currentShipLength)
@@ -162,33 +159,54 @@ function init() {
     cellsRequiredToPlace = []
   }
 
+  function resetCurrentShip() {
+    playerShipBtns[currentShipIndex].disabled
+    currentShip = {}
+    currentShipLength = 0
+    currentShipIndex = 0
+    cellsRequiredToPlace = []
+  }
+
   function updateCellsRequired() {
     if (direction === 'down') {
       requiredCellsDown(currentCell, currentShipLength, cellsRequiredToPlace)
-      console.log(cellsRequiredToPlace)
+      // console.log(cellsRequiredToPlace)
     } else if (direction === 'right') {
       requiredCellsRight(currentCell, currentShipLength, cellsRequiredToPlace)
-      console.log(cellsRequiredToPlace)
+      // console.log(cellsRequiredToPlace)
     } else if (direction === 'up') {
       requiredCellsUp(currentCell, currentShipLength, cellsRequiredToPlace)
-      console.log(cellsRequiredToPlace)
+      // console.log(cellsRequiredToPlace)
     } else {
       requiredCellsLeft(currentCell, currentShipLength, cellsRequiredToPlace)
-      console.log(cellsRequiredToPlace)
+      // console.log(cellsRequiredToPlace)
     }
   }
 
-
-
   function placeShip() {
-    console.log(currentShipLength)
-    console.log(this.innerText)
-    checkPlayerCellAvailability()
+    if ((direction === 'up' || direction === 'down') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false) {
+      pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
+      playerShipBtns[currentShipIndex].disabled = true
+      console.log(playerShips[currentShipIndex])
+      resetCurrentShip()
+      console.log('ship was placed')
+      console.log(occupiedCellsPlayer)
+      resetCurrentShip()
+    } else if ((direction === 'left' || direction === 'right') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false && sameLine(cellsRequiredToPlace)) {
+      pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
+      playerShipBtns[currentShipIndex].disabled = true
+      console.log(playerShips[currentShipIndex])
+      resetCurrentShip()
+      console.log('ship was placed')
+      console.log(occupiedCellsPlayer)
+    } else {
+      console.log('NOT PLACED')
+    }
   }
 
-  function checkPlayerCellAvailability() {
-
-  }
+  // function disableShipBtns() {
+  //   playerShipBtns.forEach(btn =>)
+  // }
 
   // player press r to rotate ship, rotateShip()
 
@@ -338,9 +356,11 @@ function init() {
         } else if (randomDirection === 1 && occupiedCheck(arrayToTest, occupiedCellsCPU) === false && withinUpperLimit(arrayToTest) === true) {
           pushToArraysIfCellsAvilable(arrayToTest, i)
           iterating = false
+          // right
         } else if (randomDirection === 2 && occupiedCheck(arrayToTest, occupiedCellsCPU) === false && width - randomCell % width > shipSize - 1 && withinUpperLimit(arrayToTest) === true) {
           pushToArraysIfCellsAvilable(arrayToTest, i)
           iterating = false
+          // left
         } else if (randomDirection === 3 && occupiedCheck(arrayToTest, occupiedCellsCPU) === false && randomCell % width >= shipSize - 1 && withinLowerLimit(arrayToTest) === true) {
           pushToArraysIfCellsAvilable(arrayToTest, i)
           iterating = false
@@ -465,6 +485,17 @@ function init() {
     return requiredCells.every(num => num < cellCount)
   }
 
+  // Checks cells are on the same line 
+  function sameLine(requiredCells) {
+    const rowOfFirstNumInArray = requiredCells[0] - requiredCells[0] % width
+    const rowOfLastNumInArray = requiredCells[requiredCells.length - 1] - requiredCells[requiredCells.length - 1] % width
+    if (rowOfFirstNumInArray === rowOfLastNumInArray) {
+      return true
+    } else {
+      return false
+    }
+  }
+
 
   // Pushes to required arrays if unoccupied
   function pushToArraysIfCellsAvilable(place, i) {
@@ -472,23 +503,32 @@ function init() {
     enemyShips[i].position = place
   }
 
-
   // Pushes cells to be taken up by ship to occupied cells array
   function pushToOccupiedCellsCPU(possiblePositon) {
     for (let i = 0; i < possiblePositon.length; i++) {
       occupiedCellsCPU.push(possiblePositon[i])
     }
-
   }
+
+  // Pushes to required arrays if unoccupied
+  function pushToPlayerArrays(possiblePositon, currentShipIndex) {
+    for (let i = 0; i < possiblePositon.length; i++) {
+      occupiedCellsPlayer.push(possiblePositon[i])
+    }
+    playerShips[currentShipIndex].position = possiblePositon
+  }
+
   // playerGridBtns.forEach(btn => console.log(btn.className))
   playerCells.forEach(btn => {
     btn.addEventListener('click', placeShip)
   })
+
   playerCells.forEach(btn => {
-    btn.addEventListener('mouseover', updateCellsRequired)
     btn.addEventListener('mouseover', updateCurrentCell)
+    btn.addEventListener('mouseover', updateCellsRequired)
     btn.addEventListener('mouseleave', clearSelection)
   })
+  
   document.addEventListener('keydown', rotate)
 }
 
