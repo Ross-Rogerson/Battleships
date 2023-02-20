@@ -95,7 +95,17 @@ main {
   width: 500px;
 }
 
-.grid button {
+
+.shipOutline {
+  border: 1px solid black;
+  flex-grow: 1;
+  height: 10%;
+  width: 10%;
+  background-color: rgba(0.1, 0.1, 0.1, 0.001);
+}
+
+
+.normal {
   border: 1px solid black;
   flex-grow: 1;
   height: 10%;

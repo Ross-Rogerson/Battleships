@@ -78,7 +78,6 @@ function init() {
   const occupiedCellsPlayer = []
   const playerGrid = document.querySelector('.playerGrid')
   const cpuGrid = document.querySelector('.cpuGrid')
-  const gridBtns = document.querySelectorAll('.grid Button')
 
   const start = document.querySelector('.start')
   const playerShipBtns = document.querySelectorAll('.playerShips Button')
@@ -100,6 +99,8 @@ function init() {
       const cell = document.createElement('button')
       cell.innerText = i
       cell.dataset.index = i
+      cell.classList.add('normal')
+      cell.id = i
       playerGrid.appendChild(cell)
       playerCells.push(cell)
     }
@@ -107,6 +108,7 @@ function init() {
       const cell = document.createElement('button')
       cell.innerText = i
       cell.dataset.index = i
+      cell.classList.add('normal')
       cpuGrid.appendChild(cell)
       cpuCells.push(cell)
     }
@@ -121,6 +123,11 @@ function init() {
   // start() -> select ship you wish to place' + on hover shadowPlacement()
   function begin() {
     placeCPUShips()
+    unlockShipBtns()
+  }
+
+  function unlockShipBtns () {
+    playerShipBtns.forEach(btn => btn.disabled = false)
   }
 
   function rotate(e) {
@@ -180,6 +187,21 @@ function init() {
     } else {
       requiredCellsLeft(currentCell, currentShipLength, cellsRequiredToPlace)
       // console.log(cellsRequiredToPlace)
+    }
+  }
+
+  function outlineCellsRequired() {
+    for (let i = 0; i < cellsRequiredToPlace.length; i++) {
+      const index = cellsRequiredToPlace[i]
+      playerCells[index].classList.remove('normal')
+      playerCells[index].classList.add('shipOutline')
+    }
+  }
+
+  function removeOutline() {
+    for (let i = 0; i < 100; i++) {
+      playerCells[i].classList.remove('shipOutline')
+      playerCells[i].classList.add('normal')
     }
   }
 
@@ -526,10 +548,15 @@ function init() {
   playerCells.forEach(btn => {
     btn.addEventListener('mouseover', updateCurrentCell)
     btn.addEventListener('mouseover', updateCellsRequired)
+    btn.addEventListener('mouseover', outlineCellsRequired)
     btn.addEventListener('mouseleave', clearSelection)
+    btn.addEventListener('mouseleave', removeOutline)
   })
-  
+
+  playerShipBtns.forEach(btn => btn.disabled = true)
+
   document.addEventListener('keydown', rotate)
+  console.log(playerCells)
 }
 
 window.addEventListener('DOMContentLoaded', init)
