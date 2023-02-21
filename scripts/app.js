@@ -74,9 +74,10 @@ function init() {
   const occupiedCellsCPU = []
   const occupiedCellsPlayer = []
   const unoccupiedCellsPlayer = []
-  const unoccupiedCellsCPU = []
   const playerHitsTaken = []
   const cpuHitsTaken = []
+  const playerMisses = []
+  const cpuMisses = []
   const cpuPreviousAttacks = []
   const playerGrid = document.querySelector('.playerGrid')
   const cpuGrid = document.querySelector('.cpuGrid')
@@ -130,9 +131,105 @@ function init() {
     }
   }
 
-  function populateUnoccupiedCellsCPU() {
-    for (let i = 0; i < cellCount; i++) {
-      unoccupiedCellsCPU.push(i)
+  function clear() {
+    clearGrids()
+    resetCPUShips()
+    resetPlayerships()
+    clearCellArrays()
+    populateUnoccupiedCellsPlayer()
+    direction = 'down'
+    cpuPreviousAttackHit = -1
+    currentAttack = []
+    currentAttackHits = []
+    disableBtns()
+    enableStart()
+  }
+
+  function clearGrids() {
+    console.log(playerMisses)
+    for (let i = 0; i < occupiedCellsPlayer.length; i++) {
+      const index = occupiedCellsPlayer[i]
+      playerCells[index].classList.remove('shipPlacedMarker')
+      playerCells[index].classList.add('normal')
+    }
+    for (let i = 0; i < cpuHitsTaken.length; i++) {
+      const index = cpuHitsTaken[i]
+      cpuCells[index].classList.remove('hit')
+      cpuCells[index].classList.add('normal')
+    }
+    for (let i = 0; i < playerHitsTaken.length; i++) {
+      const index = playerHitsTaken[i]
+      playerCells[index].classList.remove('hit')
+      playerCells[index].classList.add('normal')
+    }
+    for (let i = 0; i < playerMisses.length; i++) {
+      const index = playerMisses[i]
+      cpuCells[index].classList.remove('miss')
+      cpuCells[index].classList.add('normal')
+    }
+    for (let i = 0; i < cpuMisses.length; i++) {
+      const index = cpuMisses[i]
+      playerCells[index].classList.remove('miss')
+      playerCells[index].classList.add('normal')
+    }
+  }
+
+  function disableBtns() {
+    setTimeout(() => {
+      playerShipBtns.forEach(btn => btn.disabled = true)
+      playerCells.forEach(btn => btn.disabled = true)
+      cpuCells.forEach(btn => btn.disabled = true)
+    }, 100)
+  }
+
+  function enableStart() {
+    setTimeout(() => {
+      start.disabled = false
+      forfeit.disabled = true
+      reset.disabled = true
+    }, 100)
+  }
+
+  function giveUp() {
+    for (let i = 0; i < enemyShips.length; i++) {
+      console.log(enemyShips[i].position)
+      console.log(enemyShips[i].hitsTaken)
+      console.log(playerShips[i].position)
+      console.log(playerShips[i].hitsTaken)
+    }
+    console.log(unoccupiedCellsPlayer)
+    console.log(occupiedCellsCPU)
+    console.log(occupiedCellsPlayer)
+    console.log(playerHitsTaken)
+    console.log(cpuHitsTaken)
+    console.log(cpuPreviousAttacks)
+    console.log(cpuPreviousAttackHit)
+    console.log(cellsRequiredToPlace)
+    console.log(direction)
+  }
+
+  function clearCellArrays() {
+    unoccupiedCellsPlayer.splice(0)
+    occupiedCellsCPU.splice(0)
+    occupiedCellsPlayer.splice(0)
+    playerHitsTaken.splice(0)
+    cpuHitsTaken.splice(0)
+    cpuPreviousAttacks.splice(0)
+    playerMisses.splice(0)
+    cpuMisses.splice(0)
+  }
+
+  function resetCPUShips() {
+    for (let i = 0; i < enemyShips.length; i++) {
+      enemyShips[i].position = []
+      enemyShips[i].hitsTaken = 0
+    }
+  }
+
+  function resetPlayerships() {
+    for (let i = 0; i < enemyShips.length; i++) {
+      playerShips[i].position = []
+      playerShips[i].hitsTaken = 0
     }
   }
 
@@ -287,6 +384,7 @@ function init() {
       playerWinCheck()
     } else {
       cpuCells[playerAttack].classList.add('miss')
+      playerMisses.push(playerAttack)
       cpuAttacks()
     }
     cpuCells[playerAttack].disabled = true
@@ -343,7 +441,7 @@ function init() {
           cpuAttack = randomCell
           cpuPreviousAttacks.push(cpuAttack)
           cpuAttackResult = occupiedCellsPlayer.includes(cpuAttack)
-          updateFollowingCPUAttack()
+          updateAfterFirstAttackHit()
           targeting = false
         }
       }
@@ -409,6 +507,25 @@ function init() {
     console.log('current attack hits ->' + currentAttackHits)
   }
 
+  function updateAfterFirstAttackHit() {
+    playerCells[cpuAttack].classList.remove('normal')
+    // if a hit (confirmed in coordinated attack function, above)
+    if (cpuAttackResult) {
+      playerCells[cpuAttack].classList.add('hit')
+      currentAttackHits.push(cpuAttack)
+      playerHitsTaken.push(cpuAttack)
+      cpuPreviousAttackHit = cpuAttack
+      ifFirstHitUpdateCurrentAttack()
+      playerShipDestroyedCheck()
+      cpuWinCheck()
+      console.log(currentAttack)
+    } else {
+      cpuMisses.push(cpuAttack)
+      cpuPreviousAttackHit = -1
+      playerCells[cpuAttack].classList.add('miss')
+    }
+  }
+
   function updateFollowingCPUAttack() {
     playerCells[cpuAttack].classList.remove('normal')
     // if a hit (confirmed in coordinated attack function, above)
@@ -422,6 +539,7 @@ function init() {
       cpuWinCheck()
       console.log(currentAttack)
     } else {
+      cpuMisses.push(cpuAttack)
       playerCells[cpuAttack].classList.add('miss')
     }
   }
@@ -599,10 +717,6 @@ function init() {
   // Pushes to required arrays if unoccupied
   function pushToArraysIfCellsAvilable(place, i) {
     pushToOccupiedCellsCPU(place)
-    for (let i = 0; i < place.length; i++) {
-      const index = place[i]
-      unoccupiedCellsCPU.splice(unoccupiedCellsCPU.indexOf(index), 1)
-    }
     enemyShips[i].position = place
   }
 
@@ -625,8 +739,6 @@ function init() {
   createGrids()
 
   populateUnoccupiedCellsPlayer()
-
-  populateUnoccupiedCellsCPU()
 
   // ! Events
 
@@ -652,9 +764,9 @@ function init() {
 
   playerCells.forEach(btn => btn.disabled = true)
 
-  // forfeit.addEventListener('click', giveUp)
+  forfeit.addEventListener('click', giveUp)
   forfeit.disable = true
-  // forfeit.addEventListener('click', clear)
+  reset.addEventListener('click', clear)
   reset.disable = true
 
   playerShipBtns.forEach(btn => btn.addEventListener('click', selectShip))
