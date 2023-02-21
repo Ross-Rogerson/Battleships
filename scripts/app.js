@@ -1,7 +1,4 @@
 function init() {
-
-  // ! Generating a grid
-
   // Variables
   // QuerySelectors: grids, playerShips, enemyShips, commentary(may contain images), start button, reset button, forfeit button
   // width, cellCount, occupiedCellsPlayer[], shipsPlayer/Comp[] containing objects for each 
@@ -77,6 +74,7 @@ function init() {
   const occupiedCellsCPU = []
   const occupiedCellsPlayer = []
   const unoccupiedCellsPlayer = []
+  const unoccupiedCellsCPU = []
   const playerHitsTaken = []
   const cpuHitsTaken = []
   const cpuPreviousAttacks = []
@@ -106,7 +104,6 @@ function init() {
   let cpuPreviousAttackHit = -1
   let cpuAttack = 0
 
-  // ? class for each ship direction?
   function createGrids() {
     for (let i = 0; i < cellCount; i++) {
       const cell = document.createElement('button')
@@ -133,8 +130,13 @@ function init() {
     }
   }
 
+  function populateUnoccupiedCellsCPU() {
+    for (let i = 0; i < cellCount; i++) {
+      unoccupiedCellsCPU.push(i)
+    }
+  }
+
   // ! Executions
-  // ? MIGHT ADD HITPOSITIONS[] TO SHIP[] AND PUSH INTO THIS AS HITS ARE MADE SO I CAN THEN USE ARRAY.LENGTH TO CHECK FOR DESTROYED SHIPS
   // ? Possibly use a timer to create a delay comp shot after player's shot
 
   // start() -> enable ship placement buttons
@@ -231,7 +233,6 @@ function init() {
   }
 
   function placeShip() {
-    console.log('unoccupied cells player before function ->' + unoccupiedCellsPlayer)
     if ((direction === 'up' || direction === 'down') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false) {
       console.log('')
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
@@ -240,10 +241,11 @@ function init() {
       resetCurrentShip()
       startBattle()
 
-    } else if ((direction === 'left' || direction === 'right') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false && 
-    sameLine(cellsRequiredToPlace)) {
+    } else if ((direction === 'left' || direction === 'right') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false &&
+      sameLine(cellsRequiredToPlace)) {
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
       playerShipBtns[currentShipIndex].disabled = true
+      shipPlaced()
       resetCurrentShip()
       startBattle()
       console.log(occupiedCellsPlayer)
@@ -263,7 +265,7 @@ function init() {
   function shipPlaced() {
     for (let i = 0; i < cellsRequiredToPlace.length; i++) {
       const index = cellsRequiredToPlace[i]
-      unoccupiedCellsPlayer.splice(unoccupiedCellsPlayer.indexOf(index),1)
+      unoccupiedCellsPlayer.splice(unoccupiedCellsPlayer.indexOf(index), 1)
       playerCells[index].classList.remove('shipOutline')
       playerCells[index].classList.add('shipPlacedMarker')
     }
@@ -462,157 +464,82 @@ function init() {
     }
   }
 
-  // ! Events
-
-
   // placeCompShips() -> for loop iterating through compShips[], place in + to - order, random number generated to choose first 
   // cell to try, checks if available by searching occupiedCellsComputer[]...
   function placeCPUShips() {
     for (let i = 0; i < 5; i++) {
       const shipSize = parseInt(enemyShips[i].length)
-      const possiblePositon = []
-      let arrayOfPossibleCellArrays = []
-      let randomCell
-      const possiblePositonUp = []
-      const possiblePositonDown = []
-      const possiblePositonRight = []
-      const possiblePositonLeft = []
-      const randomDirection = 0
+      const randomDirection = Math.floor(Math.random() * 4)
 
-      // While loop checks random number to ensure ship can be placed in at least 1 of the 4 possible directions
-      let looping = true
-      while (looping) {
-        const random = Math.floor(Math.random() * 100)
-        requiredCellsUp(random, shipSize, possiblePositonUp)
-        const requiredCellsU = possiblePositonUp
-        arrayOfPossibleCellArrays.push(requiredCellsU)
-        requiredCellsDown(random, shipSize, possiblePositonDown)
-        const requiredCellsD = possiblePositonDown
-        arrayOfPossibleCellArrays.push(requiredCellsD)
-        requiredCellsRight(random, shipSize, possiblePositonRight)
-        const requiredCellsR = possiblePositonRight
-        arrayOfPossibleCellArrays.push(requiredCellsR)
-        requiredCellsLeft(random, shipSize, possiblePositonLeft)
-        const requiredCellsL = possiblePositonLeft
-        arrayOfPossibleCellArrays.push(requiredCellsL)
-        if (occupiedCheck(requiredCellsU, occupiedCellsCPU) === false && withinLowerLimit(requiredCellsU) === true) {
-          looping = false
-          randomCell = random
-        } else if (occupiedCheck(requiredCellsD, occupiedCellsCPU) === false && withinUpperLimit(requiredCellsD) === true) {
-          looping = false
-          randomCell = random
-          arrayOfPossibleCellArrays.splice(arrayOfPossibleCellArrays.indexOf(requiredCellsU), 1)
-        } else if (occupiedCheck(requiredCellsR, occupiedCellsCPU) === false && width - random % width > shipSize - 1 && withinUpperLimit(requiredCellsR) === true) {
-          looping = false
-          randomCell = random
-          arrayOfPossibleCellArrays.splice(arrayOfPossibleCellArrays.indexOf(requiredCellsU), 1)
-          arrayOfPossibleCellArrays.splice(arrayOfPossibleCellArrays.indexOf(requiredCellsD), 1)
-        } else if (occupiedCheck(requiredCellsL, occupiedCellsCPU) === false && random % width >= shipSize - 1 && withinLowerLimit(requiredCellsL) === true) {
-          looping = false
-          randomCell = random
-          arrayOfPossibleCellArrays.splice(arrayOfPossibleCellArrays.indexOf(requiredCellsU), 1)
-          arrayOfPossibleCellArrays.splice(arrayOfPossibleCellArrays.indexOf(requiredCellsD), 1)
-          arrayOfPossibleCellArrays.splice(arrayOfPossibleCellArrays.indexOf(requiredCellsR), 1)
-        } else {
-          looping = true
-          arrayOfPossibleCellArrays = []
+      // Up
+      if (randomDirection === 0) {
+        let looping = true
+        let possiblePositon = []
+        while (looping) {
+          const randomCell = Math.floor(Math.random() * (100 - width * (shipSize - 1))) + width * (shipSize - 1)
+          requiredCellsUp(randomCell, shipSize, possiblePositon)
+          if (occupiedCheck(possiblePositon, occupiedCellsCPU) === false) {
+            looping = false
+            pushToArraysIfCellsAvilable(possiblePositon, i)
+          } else {
+            looping = true
+            possiblePositon = []
+          }
         }
       }
 
-      let iterating = true
-      while (iterating) {
-        const randomDirection = Math.floor(Math.random() * arrayOfPossibleCellArrays.length)
-        const arrayToTest = arrayOfPossibleCellArrays[randomDirection]
-        if (randomDirection === 0 && occupiedCheck(arrayToTest, occupiedCellsCPU) === false && withinLowerLimit(arrayToTest) === true) {
-          pushToArraysIfCellsAvilable(arrayToTest, i)
-          iterating = false
-        } else if (randomDirection === 1 && occupiedCheck(arrayToTest, occupiedCellsCPU) === false && withinUpperLimit(arrayToTest) === true) {
-          pushToArraysIfCellsAvilable(arrayToTest, i)
-          iterating = false
-          // right
-        } else if (randomDirection === 2 && occupiedCheck(arrayToTest, occupiedCellsCPU) === false && width - randomCell % width > shipSize - 1 && withinUpperLimit(arrayToTest) === true) {
-          pushToArraysIfCellsAvilable(arrayToTest, i)
-          iterating = false
-          // left
-        } else if (randomDirection === 3 && occupiedCheck(arrayToTest, occupiedCellsCPU) === false && randomCell % width >= shipSize - 1 && withinLowerLimit(arrayToTest) === true) {
-          pushToArraysIfCellsAvilable(arrayToTest, i)
-          iterating = false
-        } else {
-          iterating = true
+      // Down
+      if (randomDirection === 1) {
+        let looping = true
+        let possiblePositon = []
+        while (looping) {
+          const randomCell = Math.floor(Math.random() * (100 - width * (shipSize - 1)))
+          requiredCellsDown(randomCell, shipSize, possiblePositon)
+          if (occupiedCheck(possiblePositon, occupiedCellsCPU) === false) {
+            looping = false
+            pushToArraysIfCellsAvilable(possiblePositon, i)
+          } else {
+            looping = true
+            possiblePositon = []
+          }
         }
       }
+
+      // Right
+      if (randomDirection === 2) {
+        let looping = true
+        let possiblePositon = []
+        while (looping) {
+          const randomCell = Math.floor(Math.random() * 10) * 10 + (Math.floor(Math.random() * ((9 - shipSize) + 1)) + 1)
+          requiredCellsRight(randomCell, shipSize, possiblePositon)
+          if (occupiedCheck(possiblePositon, occupiedCellsCPU) === false) {
+            looping = false
+            pushToArraysIfCellsAvilable(possiblePositon, i)
+          } else {
+            looping = true
+            possiblePositon = []
+          }
+        }
+      }
+
+      // Left
+      if (randomDirection === 3) {
+        let looping = true
+        let possiblePositon = []
+        while (looping) {
+          const randomCell = Math.floor(Math.random() * 10) * 10 + Math.floor(Math.random() * (9 - (shipSize - 1) + 1)) + (shipSize - 1)
+          requiredCellsLeft(randomCell, shipSize, possiblePositon)
+          if (occupiedCheck(possiblePositon, occupiedCellsCPU) === false) {
+            looping = false
+            pushToArraysIfCellsAvilable(possiblePositon, i)
+          } else {
+            looping = true
+            possiblePositon = []
+          }
+        }
+      }
+      console.log(enemyShips[i])
     }
-    console.log(enemyShips[0])
-    console.log(enemyShips[1])
-    console.log(enemyShips[2])
-    console.log(enemyShips[3])
-    console.log(enemyShips[4])
-    console.log(occupiedCellsCPU)
-
-    // ? Exploring randomising direction before calculating cells to occupy
-    // // Up
-    // if (randomDirection === 0) {
-    //   let looping = true
-    //   while (looping) {
-    //     const randomCell = Math.floor(Math.random() * (100 - width * (shipSize - 1))) + width * (shipSize - 1)
-    //     requiredCellsUp(randomCell, shipSize, possiblePositon)
-    //     const requiredCells = possiblePositon
-    //     if (occupiedCheck(requiredCells, occupiedCellsCPU) === false) {
-    //       looping = false
-    //       pushToArraysIfCellsAvilable(requiredCells, i)
-    //     } else {
-    //       looping = true
-    //     }
-    //   }
-    // }
-
-    // // Down
-    // if (randomDirection === 1) {
-    //   let looping = true
-    //   while (looping) {
-    //     const randomCell = Math.floor(Math.random() * (100 - width * (shipSize - 1)))
-    //     requiredCellsDown(randomCell, shipSize, possiblePositon)
-    //     const requiredCells = possiblePositon
-    //     if (occupiedCheck(requiredCells, occupiedCellsCPU) === false) {
-    //       looping = false
-    //       pushToArraysIfCellsAvilable(requiredCells, i)
-    //     } else {
-    //       looping = true
-    //     }
-    //   }
-    // }
-
-    // // Right
-    // if (randomDirection === 2) {
-    //   let looping = true
-    //   while (looping) {
-    //     const randomCell = Math.floor(Math.random() * 10) * 10 + (Math.floor(Math.random() * ((9 - shipSize) + 1)) + 1)
-    //     requiredCellsRight(randomCell, shipSize, possiblePositon)
-    //     const requiredCells = possiblePositon
-    //     if (occupiedCheck(requiredCells, occupiedCellsCPU) === false) {
-    //       looping = false
-    //       pushToArraysIfCellsAvilable(requiredCells, i)
-    //     } else {
-    //       looping = true
-    //     }
-    //   }
-    // }
-
-    // // Left
-    // if (randomDirection === 3) {
-    //   let looping = true
-    //   while (looping) {
-    //     const randomCell = Math.floor(Math.random() * 10) * 10 + Math.floor(Math.random() * (9 - (shipSize - 1) + 1)) + (shipSize - 1)
-    //     requiredCellsLeft(randomCell, shipSize, possiblePositon)
-    //     const requiredCells = possiblePositon
-    //     if (occupiedCheck(requiredCells, occupiedCellsCPU) === false) {
-    //       looping = false
-    //       pushToArraysIfCellsAvilable(requiredCells, i)
-    //     } else {
-    //       looping = true
-    //     }
-    //   }
-    // }
   }
 
   // Creates array of cells required to place ship from random cell to the RIGHT and checks their availability 
@@ -629,7 +556,7 @@ function init() {
     }
   }
 
-  // Creates array of cells required to place ship from random cell to the UP and checks their availability 
+  // Creates array of cells required to place ship from random cell UP and checks their availability 
   function requiredCellsUp(randomCell, shipSize, possiblePositonUp) {
     for (let i = randomCell; i >= randomCell - ((shipSize - 1) * width); i -= width) {
       possiblePositonUp.push(i)
@@ -672,6 +599,10 @@ function init() {
   // Pushes to required arrays if unoccupied
   function pushToArraysIfCellsAvilable(place, i) {
     pushToOccupiedCellsCPU(place)
+    for (let i = 0; i < place.length; i++) {
+      const index = place[i]
+      unoccupiedCellsCPU.splice(unoccupiedCellsCPU.indexOf(index), 1)
+    }
     enemyShips[i].position = place
   }
 
@@ -690,13 +621,14 @@ function init() {
     playerShips[currentShipIndex].position = possiblePositon
   }
 
-  // ! End of Execution
-
-
   // ! Page load
   createGrids()
 
   populateUnoccupiedCellsPlayer()
+
+  populateUnoccupiedCellsCPU()
+
+  // ! Events
 
   start.addEventListener('click', begin)
 
