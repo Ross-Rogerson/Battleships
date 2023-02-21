@@ -76,6 +76,7 @@ function init() {
   const playerShips = [playerLargeBoat, playerMediumBoat, playerMediumBoat2, playerSmallBoat, playerXSmallBoat]
   const occupiedCellsCPU = []
   const occupiedCellsPlayer = []
+  const unoccupiedCellsPlayer = []
   const playerHitsTaken = []
   const cpuHitsTaken = []
   const cpuPreviousAttacks = []
@@ -123,6 +124,12 @@ function init() {
       cell.classList.add('normal')
       cpuGrid.appendChild(cell)
       cpuCells.push(cell)
+    }
+  }
+
+  function populateUnoccupiedCellsPlayer() {
+    for (let i = 0; i < cellCount; i++) {
+      unoccupiedCellsPlayer.push(i)
     }
   }
 
@@ -216,19 +223,25 @@ function init() {
   }
 
   function removeOutline() {
-    for (let i = 0; i < 100; i++) {
-      playerCells[i].classList.remove('shipOutline')
-      playerCells[i].classList.add('normal')
+    for (let i = 0; i < unoccupiedCellsPlayer.length; i++) {
+      const index = unoccupiedCellsPlayer[i]
+      playerCells[index].classList.remove('shipOutline')
+      playerCells[index].classList.add('normal')
     }
   }
 
   function placeShip() {
+    console.log('unoccupied cells player before function ->' + unoccupiedCellsPlayer)
     if ((direction === 'up' || direction === 'down') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false) {
+      console.log('')
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
       playerShipBtns[currentShipIndex].disabled = true
+      shipPlaced()
       resetCurrentShip()
       startBattle()
-    } else if ((direction === 'left' || direction === 'right') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false && sameLine(cellsRequiredToPlace)) {
+
+    } else if ((direction === 'left' || direction === 'right') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false && 
+    sameLine(cellsRequiredToPlace)) {
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
       playerShipBtns[currentShipIndex].disabled = true
       resetCurrentShip()
@@ -244,6 +257,15 @@ function init() {
       removeOutline()
       playerCells.forEach(btn => btn.disabled = true)
       unlockEnemyGrid()
+    }
+  }
+
+  function shipPlaced() {
+    for (let i = 0; i < cellsRequiredToPlace.length; i++) {
+      const index = cellsRequiredToPlace[i]
+      unoccupiedCellsPlayer.splice(unoccupiedCellsPlayer.indexOf(index),1)
+      playerCells[index].classList.remove('shipOutline')
+      playerCells[index].classList.add('shipPlacedMarker')
     }
   }
 
@@ -343,7 +365,7 @@ function init() {
         currentAttackHits[0] + width <= 99 && cpuPreviousAttacks.includes(currentAttackHits[0] + width) === false)) {
       cpuAttack = currentAttackHits[0] + width
       // If prev shot was down and a hit, the cell below is within the grid and not trgted previously, try another shot down
-    } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttackHits[currentAttackHits.length - 1] - currentAttackHits[currentAttackHits.length - 2] === 10 &&
+    } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttackHits[currentAttackHits.length - 1] % width === currentAttackHits[currentAttackHits.length - 2] % width &&
       cpuPreviousAttackHit + width <= 99 && cpuPreviousAttacks.includes(cpuPreviousAttackHit + width) === false) {
       cpuAttack = currentAttackHits[currentAttackHits.length - 1] + width
       // If prev missed (hit would have executed above), down, cell+1 is on the same line as the orign hit and not already trgted OR prev shot was the 1st hit and down was invalid, try 1st shot to the right
@@ -361,8 +383,8 @@ function init() {
     } else if (currentAttackHits[0] % width !== 0 && cpuPreviousAttacks.includes(currentAttackHits[0] - 1) === false) {
       cpuAttack = currentAttackHits[0] - 1
       // !Added occupied checks to below conditional
-    } else if ((currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1] === 1 || currentAttackHits[0] - currentAttack[currentAttack.length - 1] === 1) && 
-    cpuPreviousAttackHit - 1 % width !== 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - 1) === false) {
+    } else if ((currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1] === 1 || currentAttackHits[0] - currentAttack[currentAttack.length - 1] === 1) &&
+      cpuPreviousAttackHit - 1 % width !== 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - 1) === false) {
       cpuAttack = cpuPreviousAttackHit - 1
       console.log(currentAttack[currentAttack.length - 2])
       console.log(currentAttack[currentAttack.length - 1])
@@ -440,72 +462,8 @@ function init() {
     }
   }
 
-  // compShotAfterHit() check if surrounding cells in compShots[]; compPreviousShotHit +1 (right), -1 (left), - width (up), + width (down)
-  // TRUE, nothing
-  // ELSE, push to compShotAfterHitOptions[]. randIndex = floor(rand * compShotAfterHitOptions.length) -> compShotCoordinate = compShotAfterHitOptions[randIndex]
-  // -> addCompShot(compShotCoordinate)
-
-  // addCompShot(compShotCoordinate) if occupiedCellsPlayer.includes(compShotCoordinate)
-  // TRUE, push cell to compShots[] + compPreviousShot = compShotCoordinate + checkPlayerShipDestroyed() + change colour of cell to hit colour + player turn
-  // ELSE, push cell to compShots[] + change colour of cell to miss colour + compPreviousShotHit = -1 + player turn
-
-  // checkPlayerShipDestroyed() identify ship hit in shipsPlayer[] using cell fired at, check if all shipsPlayer.position[] in compShots[]
-  // TRUE,  playerShipDestroyed()
-  // ELSE, nothing
-
-  // playerShipDestroyed() playerShipsRemianing -= 1 + checkCompWon() + compPreviousShotHit = -1 + mark player ship as sunk in display
-
-  // checkCompWon() playerShipsRemaining = 0
-  // TRUE, compWins()
-  // ELSE, nothing
-
-  // compWins() message + disable grids & forfeit button
-
-  // playerShoots() if occupiedCellsComputer.includes(this.value)
-  // TRUE, push this.value to playerShots[] + checkComputerShipDestroyed() + change colour of cell to hit colour + computer turn
-  // ELSE, push this.value to playerShots[] + change colour of cell to miss colour + computer turn
-
-  // checkComputerShipDestroyed() identify ship hit in shipsComputer[] using cell fired at, check if all shipsComputer.position[] in playerShots[]
-  // TRUE, computerShipDestroyed()
-  // ELSE, nothing
-
-  // computerShipDestroyed() computerShipsRemianing -= 1 + checkPlayerWon() + mark computer ship as sunk in display
-
-  // checkPlayerWon() computerShipsRemaining = 0
-  // TRUE, playerWins()
-  // ELSE, nothing
-
-  // playerWins() message + disable grids & forfeit button
-
-
-
-  // shadowPlacement() add class to player grid outlining selected ship on hover
-
-  // rotateShip() rotates around a central point
-
-  // placesShip() cells occupied by ship are pushed into occupiedCellsPlayer[] + shipsPlaced +=1 + if(shipsPlaced < 5
-  // TRUE, moves onto next ship in array
-  // ELSE, disable ship buttons & player grid + enable computer grid + 'select a cell on enemy grid to fire a missile and begin the war!'
-
   // ! Events
-  // click start, start()
-  start.addEventListener('click', begin)
-  // click reset
-  // click forfeit
 
-  // player clicks to shoot: forEach, playerShoots()
-
-  // ! Page load
-
-  // disbale grid buttons
-  // gridBtns.forEach(btn => {
-  //   btn.disabled
-  // })
-
-  // disable forfeit button
-
-  // createGrids()
-  createGrids()
 
   // placeCompShips() -> for loop iterating through compShips[], place in + to - order, random number generated to choose first 
   // cell to try, checks if available by searching occupiedCellsComputer[]...
@@ -733,6 +691,14 @@ function init() {
   }
 
   // ! End of Execution
+
+
+  // ! Page load
+  createGrids()
+
+  populateUnoccupiedCellsPlayer()
+
+  start.addEventListener('click', begin)
 
   // playerCells buttons for placing ships
   playerCells.forEach(btn => {
