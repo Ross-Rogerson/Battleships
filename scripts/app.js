@@ -182,6 +182,7 @@ function init() {
     cellsRequiredToPlace = []
   }
 
+
   function resetCurrentShip() {
     playerShipBtns[currentShipIndex].disabled
     currentShip = {}
@@ -243,11 +244,6 @@ function init() {
       removeOutline()
       playerCells.forEach(btn => btn.disabled = true)
       unlockEnemyGrid()
-      console.log(playerShips[0])
-      console.log(playerShips[1])
-      console.log(playerShips[2])
-      console.log(playerShips[3])
-      console.log(playerShips[4])
     }
   }
 
@@ -293,7 +289,7 @@ function init() {
 
   function playerWinCheck() {
     if (cpuHitsTaken.length >= 13) {
-      // lockEnemyGrid()
+      lockEnemyGrid()
       forfeit.disabled = true
       console.log('Game Over')
     } else {
@@ -308,20 +304,6 @@ function init() {
   function lockEnemyGrid() {
     cpuCells.forEach(btn => btn.disabled = true)
   }
-
-  // function disableShipBtns() {
-  //   playerShipBtns.forEach(btn =>)
-  // }
-
-  // player press r to rotate ship, rotateShip()
-
-  // player clicks to select ship to place, forEach
-  
-
-  // player hovers to place ship, shadowPlacement()
-
-
-  // playerGridBtns.forEach(btn => console.log(btn.value))
 
   // computerShoots() if compPreviousShotHit < 0
   // TRUE, randCell on player grid, if compShots.includes(randCell) = true, restart function, else compShotCoordinate = randCell...
@@ -347,44 +329,50 @@ function init() {
   }
 
   function coordinatedAttack() {
-    // If only one shot has hit on this attack, that hit was the previous shot fired and the cell above within grid and has not been targetted previously
+    // If only one shot has hit on this attack, that hit was the prev shot fired and the cell above within grid and has not been trgted previously
     if (currentAttack.length === 1 && cpuPreviousAttackHit - width >= 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === false) {
       cpuAttack = cpuPreviousAttackHit - width
-      // If previous shot was a hit, up, within grid and has not been targetted previously, try up again
+      // If prev shot was a hit, up, within grid and has not been trgted previously, try up again
     } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttackHits[currentAttackHits.length - 2] - currentAttackHits[currentAttackHits.length - 1] === 10 &&
       cpuPreviousAttackHit - width >= 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === false) {
       cpuAttack = currentAttackHits[currentAttackHits.length - 1] - width
-      // If previous shot was up, a miss (a hit would have executed previous), the cell below is within the grid and not targetted previous, try first down shot
+      // If prev shot was up and a miss (a hit would have executed prev), the cell below is within the grid and not trgted previously OR prev shot was the 1st hit and up was invalid, try 1st down shot
     } else if (((currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1]) === 10 &&
       currentAttackHits[0] + width <= 99 && cpuPreviousAttacks.includes(currentAttackHits[0] + width) === false) || ((currentAttack.length === 1 &&
         (cpuPreviousAttackHit - width < 0 || cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === true)) &&
         currentAttackHits[0] + width <= 99 && cpuPreviousAttacks.includes(currentAttackHits[0] + width) === false)) {
       cpuAttack = currentAttackHits[0] + width
-      // If previous shot was down, a hit, the cell below is within the grid and not targetted previous, try another shot down
+      // If prev shot was down and a hit, the cell below is within the grid and not trgted previously, try another shot down
     } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttackHits[currentAttackHits.length - 1] - currentAttackHits[currentAttackHits.length - 2] === 10 &&
       cpuPreviousAttackHit + width <= 99 && cpuPreviousAttacks.includes(cpuPreviousAttackHit + width) === false) {
       cpuAttack = currentAttackHits[currentAttackHits.length - 1] + width
-      // If previous shot was a miss (a hit would have executed previous), down, the cell to the right is on the same line as the original hit and not targetted previously, try first shot to the right
+      // If prev missed (hit would have executed above), down, cell+1 is on the same line as the orign hit and not already trgted OR prev shot was the 1st hit and down was invalid, try 1st shot to the right
     } else if ((Math.abs(currentAttack[currentAttack.length - 1] - currentAttack[currentAttack.length - 2]) >= 10 &&
       (currentAttackHits[0] + 1) % width <= 9 && cpuPreviousAttacks.includes(currentAttackHits[0] + 1) === false) || ((currentAttack.length === 1 &&
         (currentAttackHits[0] + width > 99 || cpuPreviousAttacks.includes(currentAttackHits[0] + width) === true)) &&
         (currentAttackHits[0] + 1) % width <= 9 && cpuPreviousAttacks.includes(currentAttackHits[0] + 1) === false)) {
       cpuAttack = currentAttackHits[0] + 1
-      // If previous shot was to the right and a hit and the cell to the right is on the same line and hasn't already been targetted, try right again
+      // If prev shot was to the right and a hit and the cell to the right is on the same line and hasn't already been trgted, try right again
     } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttack[currentAttack.length - 1] - currentAttackHits[currentAttackHits.length - 2] === 1 &&
       (cpuPreviousAttackHit + 1) % width <= 9 && cpuPreviousAttacks.includes(cpuPreviousAttackHit + 1) === false) {
       cpuAttack = cpuPreviousAttackHit + 1
       // Only option remaining is left
-    } else if (currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1] === 1 || currentAttackHits[0] - currentAttack[currentAttack.length - 1] === 1) {
-      cpuAttack = cpuPreviousAttackHit - 1
-    } else {
+      // ! added below if statement, switched order of left options
+    } else if (currentAttackHits[0] % width !== 0 && cpuPreviousAttacks.includes(currentAttackHits[0] - 1) === false) {
       cpuAttack = currentAttackHits[0] - 1
+      // !Added occupied checks to below conditional
+    } else if ((currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1] === 1 || currentAttackHits[0] - currentAttack[currentAttack.length - 1] === 1) && 
+    cpuPreviousAttackHit - 1 % width !== 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - 1) === false) {
+      cpuAttack = cpuPreviousAttackHit - 1
       console.log(currentAttack[currentAttack.length - 2])
       console.log(currentAttack[currentAttack.length - 1])
       console.log(currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1])
       console.log(currentAttackHits[0] + width)
       console.log(cpuPreviousAttacks.includes(currentAttackHits[0] + width) === false)
 
+    } else {
+      cpuPreviousAttackHit = -1
+      cpuAttacks()
     }
 
     console.log(cpuAttack)
