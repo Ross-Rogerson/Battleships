@@ -126,13 +126,11 @@ function init() {
     }
   }
 
-  // const playerGridBtns = playerCells.addEventListener('Button')
-
   // ! Executions
   // ? MIGHT ADD HITPOSITIONS[] TO SHIP[] AND PUSH INTO THIS AS HITS ARE MADE SO I CAN THEN USE ARRAY.LENGTH TO CHECK FOR DESTROYED SHIPS
   // ? Possibly use a timer to create a delay comp shot after player's shot
 
-  // start() -> select ship you wish to place' + on hover shadowPlacement()
+  // start() -> enable ship placement buttons
   function begin() {
     start.disabled = true
     reset.disabled = false
@@ -143,6 +141,10 @@ function init() {
 
   function unlockShipBtns() {
     playerShipBtns.forEach(btn => btn.disabled = false)
+  }
+
+  function unlockPlayerGrid() {
+    playerCells.forEach(btn => btn.disabled = false)
   }
 
   function rotate(e) {
@@ -173,6 +175,7 @@ function init() {
     currentShipIndex = parseInt(this.value) - 1
     currentShip = playerShips[currentShipIndex]
     currentShipLength = currentShip.length
+    unlockPlayerGrid()
   }
 
   function clearSelection() {
@@ -313,17 +316,16 @@ function init() {
   // player press r to rotate ship, rotateShip()
 
   // player clicks to select ship to place, forEach
-  playerShipBtns.forEach(btn => btn.addEventListener('click', selectShip))
+  
 
   // player hovers to place ship, shadowPlacement()
 
 
   // playerGridBtns.forEach(btn => console.log(btn.value))
 
-  // computerShoots() if compPreviousShotHit >= 0
-  // TRUE, compShotAfterHit()
-  // ELSE, randCell on player grid, if compShots.includes(randCell) = true, restart function, else compShotCoordinate = randCell...
-  // -> addCompShot(compShotCoordinate)
+  // computerShoots() if compPreviousShotHit < 0
+  // TRUE, randCell on player grid, if compShots.includes(randCell) = true, restart function, else compShotCoordinate = randCell...
+  // ELSE, compShotAfterHit()
   function cpuAttacks() {
     if (cpuPreviousAttackHit < 0) {
       let targeting = true
@@ -344,14 +346,7 @@ function init() {
     }
   }
 
-  // ? COORDINATED ATTACK ATTEMPT
   function coordinatedAttack() {
-    const surroundingCells = []
-    let up
-    let down
-    const right = currentAttackHits[0] + 1
-    const left = currentAttackHits[0] - 1
-
     // If only one shot has hit on this attack, that hit was the previous shot fired and the cell above within grid and has not been targetted previously
     if (currentAttack.length === 1 && cpuPreviousAttackHit - width >= 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === false) {
       cpuAttack = cpuPreviousAttackHit - width
@@ -392,31 +387,6 @@ function init() {
 
     }
 
-
-    // const upOccupied = cpuPreviousAttacks.includes(up)
-    // const downOccupied = cpuPreviousAttacks.includes(down)
-
-    // if (currentAttackHits.length < 2) {
-    //   verticalCoordinates(surroundingCells, up, down)
-    //   horizontalCoordinates(surroundingCells, left, right)
-
-    //   console.log('Before random ->' + surroundingCells)
-
-    //   const randNum = Math.floor(Math.random() * surroundingCells.length)
-    //   cpuAttack = surroundingCells[randNum]
-
-    // } else if (Math.abs(playerHitsTaken[playerHitsTaken.length - 1] - playerHitsTaken[playerHitsTaken.length - 2]) > 1) {
-    //   verticalCoordinates(surroundingCells, up, down)
-    //   console.log('Before VERTICAL random ->' + surroundingCells)
-    //   const randNum = Math.floor(Math.random() * surroundingCells.length)
-    //   cpuAttack = surroundingCells[randNum]
-    // } else {
-    //   horizontalCoordinates(surroundingCells, left, right)
-    //   console.log('Before HORIZONTAL random ->' + surroundingCells)
-    //   const randNum = Math.floor(Math.random() * surroundingCells.length)
-    //   cpuAttack = surroundingCells[randNum]
-    // }
-
     console.log(cpuAttack)
     cpuPreviousAttacks.push(cpuAttack)
     currentAttack.push(cpuAttack)
@@ -426,73 +396,6 @@ function init() {
     updateFollowingCPUAttack()
     console.log('current attack hits ->' + currentAttackHits)
   }
-
-  // ! COORDINATED ATTACK ATTEMPT
-  // function coordinatedAttack2() {
-  //   const surroundingCells = []
-  //   const up = currentAttackHits[0] - width
-  //   const down = currentAttackHits[0] + width
-  //   const right = currentAttackHits[0] + 1
-  //   const left = currentAttackHits[0] - 1
-
-  //   if (currentAttackHits.length < 2) {
-  //     verticalCoordinates(surroundingCells, up, down)
-  //     horizontalCoordinates(surroundingCells, left, right)
-
-  //     console.log('Before random ->' + surroundingCells)
-
-  //     const randNum = Math.floor(Math.random() * surroundingCells.length)
-  //     cpuAttack = surroundingCells[randNum]
-
-  //   } else if (Math.abs(playerHitsTaken[playerHitsTaken.length - 1] - playerHitsTaken[playerHitsTaken.length - 2]) > 1) {
-  //     verticalCoordinates(surroundingCells, up, down)
-  //     console.log('Before VERTICAL random ->' + surroundingCells)
-  //     const randNum = Math.floor(Math.random() * surroundingCells.length)
-  //     cpuAttack = surroundingCells[randNum]
-  //   } else {
-  //     horizontalCoordinates(surroundingCells, left, right)
-  //     console.log('Before HORIZONTAL random ->' + surroundingCells)
-  //     const randNum = Math.floor(Math.random() * surroundingCells.length)
-  //     cpuAttack = surroundingCells[randNum]
-  //   }
-
-  //   console.log(cpuAttack)
-  //   cpuPreviousAttacks.push(cpuAttack)
-  //   cpuAttackResult = occupiedCellsPlayer.includes(cpuAttack)
-  //   console.log('current attack hits ->' + currentAttackHits)
-  //   updateFollowingCPUAttack()
-  // }
-
-  // function verticalCoordinates(surroundingCells, up, down) {
-  //   const upOccupied = cpuPreviousAttacks.includes(up)
-  //   const downOccupied = cpuPreviousAttacks.includes(down)
-  //   if (up >= 0 && upOccupied === false) {
-  //     surroundingCells.push(up)
-  //   } else if (down < cellCount && downOccupied === false && currentAttackHits < 3) {
-  //     down = currentAttackHits[0]
-  //     surroundingCells.push(down)
-  //   } else {
-  //     down = currentAttackHits[currentAttackHits.length - 1]
-  //     surroundingCells.push(down)
-  //   }
-  //   console.log('target options after VERTICAL coordinates ->' + surroundingCells)
-  // }
-
-  // function horizontalCoordinates(surroundingCells, left, right) {
-  //   const modPreviousHit = cpuPreviousAttackHit % width
-  //   const rightOccupied = cpuPreviousAttacks.includes(right)
-  //   const leftOccupied = cpuPreviousAttacks.includes(left)
-  //   if (modPreviousHit !== 0 && leftOccupied === false) {
-  //     surroundingCells.push(left)
-  //   } else if (modPreviousHit !== 9 && rightOccupied === false && currentAttackHits < 3) {
-  //     right = currentAttackHits[0]
-  //     surroundingCells.push(right)
-  //   } else {
-  //     right = currentAttackHits[currentAttackHits.length - 1]
-  //     surroundingCells.push(right)
-  //   }
-  //   console.log('target options after HORIZONTAL coordinates ->' + surroundingCells)
-  // }
 
   function updateFollowingCPUAttack() {
     playerCells[cpuAttack].classList.remove('normal')
@@ -820,7 +723,6 @@ function init() {
     }
   }
 
-
   // Pushes to required arrays if unoccupied
   function pushToArraysIfCellsAvilable(place, i) {
     pushToOccupiedCellsCPU(place)
@@ -842,22 +744,12 @@ function init() {
     playerShips[currentShipIndex].position = possiblePositon
   }
 
-  // playerGridBtns.forEach(btn => console.log(btn.className))
+  // ! End of Execution
+
+  // playerCells buttons for placing ships
   playerCells.forEach(btn => {
     btn.addEventListener('click', placeShip)
   })
-
-  cpuCells.forEach(btn => {
-    btn.addEventListener('click', playerAttacks)
-  })
-
-  cpuCells.forEach(btn => btn.disabled = true)
-
-  // forfeit.addEventListener('click', giveUp)
-  forfeit.disable = true
-  // forfeit.addEventListener('click', clear)
-  reset.disable = true
-
   playerCells.forEach(btn => {
     btn.addEventListener('mouseover', updateCurrentCell)
     btn.addEventListener('mouseover', updateCellsRequired)
@@ -866,6 +758,20 @@ function init() {
     btn.addEventListener('mouseleave', removeOutline)
   })
 
+  cpuCells.forEach(btn => {
+    btn.addEventListener('click', playerAttacks)
+  })
+
+  cpuCells.forEach(btn => btn.disabled = true)
+
+  playerCells.forEach(btn => btn.disabled = true)
+
+  // forfeit.addEventListener('click', giveUp)
+  forfeit.disable = true
+  // forfeit.addEventListener('click', clear)
+  reset.disable = true
+
+  playerShipBtns.forEach(btn => btn.addEventListener('click', selectShip))
   playerShipBtns.forEach(btn => btn.disabled = true)
 
   document.addEventListener('keydown', rotate)
