@@ -78,8 +78,11 @@ function init() {
   const occupiedCellsPlayer = []
   const playerHitsTaken = []
   const cpuHitsTaken = []
+  const cpuPreviousAttacks = []
   const playerGrid = document.querySelector('.playerGrid')
   const cpuGrid = document.querySelector('.cpuGrid')
+  let currentAttackHits = []
+  let currentAttack = []
 
   const start = document.querySelector('.start')
   const reset = document.querySelector('.reset')
@@ -96,8 +99,11 @@ function init() {
   let cellsRequiredToPlace = []
   let direction = 'down'
   let currentCell = 0
-  let playerShot = 0
-  let playerShotResult = false
+  let playerAttack = 0
+  let playerAttackResult = false
+  let cpuAttackResult = true
+  let cpuPreviousAttackHit = -1
+  let cpuAttack = 0
 
   // ? class for each ship direction?
   function createGrids() {
@@ -166,9 +172,7 @@ function init() {
   function selectShip() {
     currentShipIndex = parseInt(this.value) - 1
     currentShip = playerShips[currentShipIndex]
-    console.log(currentShip)
     currentShipLength = currentShip.length
-    console.log(currentShipLength)
   }
 
   function clearSelection() {
@@ -220,14 +224,11 @@ function init() {
       playerShipBtns[currentShipIndex].disabled = true
       resetCurrentShip()
       startBattle()
-      console.log('ship was placed')
-      console.log(occupiedCellsPlayer)
     } else if ((direction === 'left' || direction === 'right') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false && sameLine(cellsRequiredToPlace)) {
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
       playerShipBtns[currentShipIndex].disabled = true
       resetCurrentShip()
       startBattle()
-      console.log('ship was placed')
       console.log(occupiedCellsPlayer)
     } else {
       console.log('NOT PLACED')
@@ -239,52 +240,61 @@ function init() {
       removeOutline()
       playerCells.forEach(btn => btn.disabled = true)
       unlockEnemyGrid()
+      console.log(playerShips[0])
+      console.log(playerShips[1])
+      console.log(playerShips[2])
+      console.log(playerShips[3])
+      console.log(playerShips[4])
     }
   }
 
-  function fireShot() {
-    playerShot = parseInt(this.dataset.index)
-    playerShotResult = occupiedCellsCPU.includes(playerShot)
+  function playerAttacks() {
+    playerAttack = parseInt(this.dataset.index)
+    playerAttackResult = occupiedCellsCPU.includes(playerAttack)
     updateTargetCell()
     // lockEnemyGrid()
   }
 
   function updateTargetCell() {
-    cpuCells[playerShot].classList.remove('normal')
-    if (playerShotResult) {
-      cpuCells[playerShot].classList.add('hit')
-      cpuHitsTaken.push(playerShot)
+    cpuCells[playerAttack].classList.remove('normal')
+    if (playerAttackResult) {
+      cpuCells[playerAttack].classList.add('hit')
+      cpuHitsTaken.push(playerAttack)
       shipDestroyedCheck()
       playerWinCheck()
     } else {
-      cpuCells[playerShot].classList.add('miss')
+      cpuCells[playerAttack].classList.add('miss')
+      cpuAttacks()
     }
-    cpuCells[playerShot].disabled = true
+    cpuCells[playerAttack].disabled = true
   }
 
   function shipDestroyedCheck() {
     let searching = true
     let iterate = 0
     while (searching) {
-      const foundIndexOfShipHit = enemyShips[iterate].position.includes(playerShot)
+      const foundIndexOfShipHit = enemyShips[iterate].position.includes(playerAttack)
       if (foundIndexOfShipHit) {
         enemyShips[iterate].hitsTaken++
         if (enemyShips[iterate].hitsTaken >= parseInt(enemyShips[iterate].length)) {
           console.log('ship destroyed')
+          searching = false
+        } else {
+          searching = false
         }
-        searching = false
       } else {
         iterate++
       }
     }
   }
 
-  function playerWinCheck () {
-    console.log(cpuHitsTaken.length)
+  function playerWinCheck() {
     if (cpuHitsTaken.length >= 13) {
-      lockEnemyGrid()
+      // lockEnemyGrid()
       forfeit.disabled = true
       console.log('Game Over')
+    } else {
+      cpuAttacks()
     }
   }
 
@@ -310,12 +320,234 @@ function init() {
 
   // playerGridBtns.forEach(btn => console.log(btn.value))
 
-  // player clicks to place ship, placesShip()
-
   // computerShoots() if compPreviousShotHit >= 0
   // TRUE, compShotAfterHit()
   // ELSE, randCell on player grid, if compShots.includes(randCell) = true, restart function, else compShotCoordinate = randCell...
   // -> addCompShot(compShotCoordinate)
+  function cpuAttacks() {
+    if (cpuPreviousAttackHit < 0) {
+      let targeting = true
+      while (targeting) {
+        const randomCell = Math.floor(Math.random() * 100)
+        if (cpuPreviousAttacks.includes(randomCell)) {
+          targeting = true
+        } else {
+          cpuAttack = randomCell
+          cpuPreviousAttacks.push(cpuAttack)
+          cpuAttackResult = occupiedCellsPlayer.includes(cpuAttack)
+          updateFollowingCPUAttack()
+          targeting = false
+        }
+      }
+    } else {
+      coordinatedAttack()
+    }
+  }
+
+  // ? COORDINATED ATTACK ATTEMPT
+  function coordinatedAttack() {
+    const surroundingCells = []
+    let up
+    let down
+    const right = currentAttackHits[0] + 1
+    const left = currentAttackHits[0] - 1
+
+    // If only one shot has hit on this attack, that hit was the previous shot fired and the cell above within grid and has not been targetted previously
+    if (currentAttack.length === 1 && cpuPreviousAttackHit - width >= 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === false) {
+      cpuAttack = cpuPreviousAttackHit - width
+      // If previous shot was a hit, up, within grid and has not been targetted previously, try up again
+    } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttackHits[currentAttackHits.length - 2] - currentAttackHits[currentAttackHits.length - 1] === 10 &&
+      cpuPreviousAttackHit - width >= 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === false) {
+      cpuAttack = currentAttackHits[currentAttackHits.length - 1] - width
+      // If previous shot was up, a miss (a hit would have executed previous), the cell below is within the grid and not targetted previous, try first down shot
+    } else if (((currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1]) === 10 &&
+      currentAttackHits[0] + width <= 99 && cpuPreviousAttacks.includes(currentAttackHits[0] + width) === false) || ((currentAttack.length === 1 &&
+        (cpuPreviousAttackHit - width < 0 || cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === true)) &&
+        currentAttackHits[0] + width <= 99 && cpuPreviousAttacks.includes(currentAttackHits[0] + width) === false)) {
+      cpuAttack = currentAttackHits[0] + width
+      // If previous shot was down, a hit, the cell below is within the grid and not targetted previous, try another shot down
+    } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttackHits[currentAttackHits.length - 1] - currentAttackHits[currentAttackHits.length - 2] === 10 &&
+      cpuPreviousAttackHit + width <= 99 && cpuPreviousAttacks.includes(cpuPreviousAttackHit + width) === false) {
+      cpuAttack = currentAttackHits[currentAttackHits.length - 1] + width
+      // If previous shot was a miss (a hit would have executed previous), down, the cell to the right is on the same line as the original hit and not targetted previously, try first shot to the right
+    } else if ((Math.abs(currentAttack[currentAttack.length - 1] - currentAttack[currentAttack.length - 2]) >= 10 &&
+      (currentAttackHits[0] + 1) % width <= 9 && cpuPreviousAttacks.includes(currentAttackHits[0] + 1) === false) || ((currentAttack.length === 1 &&
+        (currentAttackHits[0] + width > 99 || cpuPreviousAttacks.includes(currentAttackHits[0] + width) === true)) &&
+        (currentAttackHits[0] + 1) % width <= 9 && cpuPreviousAttacks.includes(currentAttackHits[0] + 1) === false)) {
+      cpuAttack = currentAttackHits[0] + 1
+      // If previous shot was to the right and a hit and the cell to the right is on the same line and hasn't already been targetted, try right again
+    } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttack[currentAttack.length - 1] - currentAttackHits[currentAttackHits.length - 2] === 1 &&
+      (cpuPreviousAttackHit + 1) % width <= 9 && cpuPreviousAttacks.includes(cpuPreviousAttackHit + 1) === false) {
+      cpuAttack = cpuPreviousAttackHit + 1
+      // Only option remaining is left
+    } else if (currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1] === 1 || currentAttackHits[0] - currentAttack[currentAttack.length - 1] === 1) {
+      cpuAttack = cpuPreviousAttackHit - 1
+    } else {
+      cpuAttack = currentAttackHits[0] - 1
+      console.log(currentAttack[currentAttack.length - 2])
+      console.log(currentAttack[currentAttack.length - 1])
+      console.log(currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1])
+      console.log(currentAttackHits[0] + width)
+      console.log(cpuPreviousAttacks.includes(currentAttackHits[0] + width) === false)
+
+    }
+
+
+    // const upOccupied = cpuPreviousAttacks.includes(up)
+    // const downOccupied = cpuPreviousAttacks.includes(down)
+
+    // if (currentAttackHits.length < 2) {
+    //   verticalCoordinates(surroundingCells, up, down)
+    //   horizontalCoordinates(surroundingCells, left, right)
+
+    //   console.log('Before random ->' + surroundingCells)
+
+    //   const randNum = Math.floor(Math.random() * surroundingCells.length)
+    //   cpuAttack = surroundingCells[randNum]
+
+    // } else if (Math.abs(playerHitsTaken[playerHitsTaken.length - 1] - playerHitsTaken[playerHitsTaken.length - 2]) > 1) {
+    //   verticalCoordinates(surroundingCells, up, down)
+    //   console.log('Before VERTICAL random ->' + surroundingCells)
+    //   const randNum = Math.floor(Math.random() * surroundingCells.length)
+    //   cpuAttack = surroundingCells[randNum]
+    // } else {
+    //   horizontalCoordinates(surroundingCells, left, right)
+    //   console.log('Before HORIZONTAL random ->' + surroundingCells)
+    //   const randNum = Math.floor(Math.random() * surroundingCells.length)
+    //   cpuAttack = surroundingCells[randNum]
+    // }
+
+    console.log(cpuAttack)
+    cpuPreviousAttacks.push(cpuAttack)
+    currentAttack.push(cpuAttack)
+    console.log('current attack ->' + currentAttack)
+    // checks if shot hits a target
+    cpuAttackResult = occupiedCellsPlayer.includes(cpuAttack)
+    updateFollowingCPUAttack()
+    console.log('current attack hits ->' + currentAttackHits)
+  }
+
+  // ! COORDINATED ATTACK ATTEMPT
+  // function coordinatedAttack2() {
+  //   const surroundingCells = []
+  //   const up = currentAttackHits[0] - width
+  //   const down = currentAttackHits[0] + width
+  //   const right = currentAttackHits[0] + 1
+  //   const left = currentAttackHits[0] - 1
+
+  //   if (currentAttackHits.length < 2) {
+  //     verticalCoordinates(surroundingCells, up, down)
+  //     horizontalCoordinates(surroundingCells, left, right)
+
+  //     console.log('Before random ->' + surroundingCells)
+
+  //     const randNum = Math.floor(Math.random() * surroundingCells.length)
+  //     cpuAttack = surroundingCells[randNum]
+
+  //   } else if (Math.abs(playerHitsTaken[playerHitsTaken.length - 1] - playerHitsTaken[playerHitsTaken.length - 2]) > 1) {
+  //     verticalCoordinates(surroundingCells, up, down)
+  //     console.log('Before VERTICAL random ->' + surroundingCells)
+  //     const randNum = Math.floor(Math.random() * surroundingCells.length)
+  //     cpuAttack = surroundingCells[randNum]
+  //   } else {
+  //     horizontalCoordinates(surroundingCells, left, right)
+  //     console.log('Before HORIZONTAL random ->' + surroundingCells)
+  //     const randNum = Math.floor(Math.random() * surroundingCells.length)
+  //     cpuAttack = surroundingCells[randNum]
+  //   }
+
+  //   console.log(cpuAttack)
+  //   cpuPreviousAttacks.push(cpuAttack)
+  //   cpuAttackResult = occupiedCellsPlayer.includes(cpuAttack)
+  //   console.log('current attack hits ->' + currentAttackHits)
+  //   updateFollowingCPUAttack()
+  // }
+
+  // function verticalCoordinates(surroundingCells, up, down) {
+  //   const upOccupied = cpuPreviousAttacks.includes(up)
+  //   const downOccupied = cpuPreviousAttacks.includes(down)
+  //   if (up >= 0 && upOccupied === false) {
+  //     surroundingCells.push(up)
+  //   } else if (down < cellCount && downOccupied === false && currentAttackHits < 3) {
+  //     down = currentAttackHits[0]
+  //     surroundingCells.push(down)
+  //   } else {
+  //     down = currentAttackHits[currentAttackHits.length - 1]
+  //     surroundingCells.push(down)
+  //   }
+  //   console.log('target options after VERTICAL coordinates ->' + surroundingCells)
+  // }
+
+  // function horizontalCoordinates(surroundingCells, left, right) {
+  //   const modPreviousHit = cpuPreviousAttackHit % width
+  //   const rightOccupied = cpuPreviousAttacks.includes(right)
+  //   const leftOccupied = cpuPreviousAttacks.includes(left)
+  //   if (modPreviousHit !== 0 && leftOccupied === false) {
+  //     surroundingCells.push(left)
+  //   } else if (modPreviousHit !== 9 && rightOccupied === false && currentAttackHits < 3) {
+  //     right = currentAttackHits[0]
+  //     surroundingCells.push(right)
+  //   } else {
+  //     right = currentAttackHits[currentAttackHits.length - 1]
+  //     surroundingCells.push(right)
+  //   }
+  //   console.log('target options after HORIZONTAL coordinates ->' + surroundingCells)
+  // }
+
+  function updateFollowingCPUAttack() {
+    playerCells[cpuAttack].classList.remove('normal')
+    // if a hit (confirmed in coordinated attack function, above)
+    if (cpuAttackResult) {
+      playerCells[cpuAttack].classList.add('hit')
+      currentAttackHits.push(cpuAttack)
+      playerHitsTaken.push(cpuAttack)
+      cpuPreviousAttackHit = cpuAttack
+      ifFirstHitUpdateCurrentAttack()
+      playerShipDestroyedCheck()
+      cpuWinCheck()
+      console.log(currentAttack)
+    } else {
+      playerCells[cpuAttack].classList.add('miss')
+    }
+  }
+
+  function ifFirstHitUpdateCurrentAttack() {
+    console.log('current attack length in ternary ->' + currentAttack.length)
+    console.log('current attack in ternary ->' + currentAttack)
+    if (currentAttack.length === 0) {
+      currentAttack.push(cpuAttack)
+    }
+  }
+
+  function playerShipDestroyedCheck() {
+    let searching = true
+    let iterate = 0
+    while (searching) {
+      const foundIndexOfShipHit = playerShips[iterate].position.includes(cpuAttack)
+      if (foundIndexOfShipHit) {
+        playerShips[iterate].hitsTaken++
+        if (playerShips[iterate].hitsTaken >= parseInt(playerShips[iterate].length)) {
+          console.log('ship destroyed')
+          cpuPreviousAttackHit = -1
+          currentAttackHits = []
+          currentAttack = []
+          searching = false
+        } else {
+          searching = false
+        }
+      } else {
+        iterate++
+      }
+    }
+  }
+
+  function cpuWinCheck() {
+    if (playerHitsTaken.length >= 13) {
+      forfeit.disabled = true
+      lockEnemyGrid()
+      console.log('CPU Wins!')
+    }
+  }
 
   // compShotAfterHit() check if surrounding cells in compShots[]; compPreviousShotHit +1 (right), -1 (left), - width (up), + width (down)
   // TRUE, nothing
@@ -616,7 +848,7 @@ function init() {
   })
 
   cpuCells.forEach(btn => {
-    btn.addEventListener('click', fireShot)
+    btn.addEventListener('click', playerAttacks)
   })
 
   cpuCells.forEach(btn => btn.disabled = true)
