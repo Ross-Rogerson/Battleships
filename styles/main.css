@@ -1,9 +1,10 @@
 * {
   box-sizing: border-box;
+  font-family: 'Tilt Warp';
 }
 
 body {
-  height: 100%;
+  height: 100vh;
   margin: 0;
   display: flex;
   justify-content: center;
@@ -15,12 +16,15 @@ body {
   overflow: hidden;
 }
 
+/* ! Header section */
+
 header {
   display: flex;
-  justify-content: center;
-  align-items: end;
-  max-width: 1150px;
-  height: 175px;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1350px;
+  width: 1350px;
+  height: 125px;
 }
 
 .headingAndSpeech {
@@ -29,23 +33,24 @@ header {
   align-items: center;
   flex-direction: column;
   height: inherit;
+  width: inherit;
 }
 
 h1 {
-  font-size: 80px;
+  font-size: 100px;
   padding: 0;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  text-decoration: underline;
-  color: white;
+  margin: 0;
+  color: #ffee15;
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: #1a48a0;
 }
 
-.avatarConatiner{
+.avatarConatiner {
   height: 125px;
   width: 150px;
 }
 
-.playerAvatarConatiner{
+.playerAvatarConatiner {
   height: 125px;
   width: 150px;
 }
@@ -60,97 +65,127 @@ h1 {
   width: inherit;
 }
 
-.speech {
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: end;
-}
-
-.playerSpeech {
-  height: inherit;
-  width: 400px;
-  margin: 0 10px 5px 0;
-  background-color: white;
-  border: solid black 1px;
-  text-align: left;
-}
-
-.cpuSpeech {
-  height: inherit;
-  width: 400px;
-  margin: 0 0 5px 10px;
-  background-color: white;
-  border: solid black 1px;
-  text-align: right;
-}
+/* ! Main section */
 
 main {
   display: flex;
+  align-items: center;
   justify-content: center;
-  max-width: 1150px;
+  max-width: 1850px;
+}
+
+.playerComponents {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  /* width: 750px; */
+}
+
+.cpuComponents {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  /* width: 750px; */
+}
+
+.playerAvatarBig {
+  display: none;
+}
+
+.cpuAvatarBig {
+  display: none;
+}
+
+/* ! Grid section */
+
+.gridContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 500px;
+  width: 600px;
+  border-radius: 10px;
+  background-image: url(../assets/newEtch.png);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 .grid {
-  align-items: center;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-wrap: wrap;
-  height: 100%;
-  justify-content: space-between;
-  height: 500px;
-  width: 500px;
-  background-color: rgb(124, 230, 194);
-  /* background-color: rgb(127, 255, 212); */
-  border: 3px solid rgba(0, 0, 0, 0.9);
+  border-radius: 2px;
+  height: 315px;
+  width: 430px;
+  background-color: lightgrey;
+  border: 5px solid black;
+  border-top: 2px solid black;
+  border-radius: 10px;
+  margin-bottom: 14px;
 }
 
 
 .shipOutline {
-  border: 1px solid black;
+  border: 1px solid slategray;
   flex-grow: 1;
   height: 10%;
   width: 10%;
-  background-color: rgba(0.1, 0.1, 0.1, 0.001);
+  background-color: rgb(177, 175, 175);
+  color: slategray;
 }
 
 .shipPlacedMarker {
-  border: 1px solid black;
+  border: 1px solid slategray;
   flex-grow: 1;
   height: 10%;
   width: 10%;
-  background-color: yellow;
+  background-color: rgb(134, 134, 134);
+  color: slategray;
 }
 
 .hit {
-  border: 1px solid black;
+  border: 1px solid lightslategray;
   flex-grow: 1;
   height: 10%;
   width: 10%;
-  background-color: red;
+  background-image: url(../assets/red-marker.png);
+  background-size: 40%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
 }
 
 .miss {
-  border: 1px solid black;
+  border: 1px solid lightslategray;
   flex-grow: 1;
   height: 10%;
   width: 10%;
-  background-color: navy;
+  background-image: url(../assets/blue-marker.png);
+  background-size: 35%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
+  background-color: transparent;
 }
 
 
 .normal {
   border: 1px solid black;
+  border: 1px solid lightslategray;
   flex-grow: 1;
   height: 10%;
   width: 10%;
-  background-color: transparent;
+  background-color: lightgray;
+  color: slategray;
 }
+
+/* ! Setup buttons section */
 
 .setUp {
   text-align: center;
   width: 150px;
-  height: 500px;
+  height: 600px;
 }
 
 .setUp button {
@@ -162,7 +197,8 @@ main {
 
 .start {
   height: 75px;
-  margin: 80px 0;
+  margin-top: 15px;
+  margin-bottom: 80px;
   background-color: rgb(14, 172, 14);
   color: white;
 }
@@ -179,11 +215,19 @@ main {
   background-color: white;
 }
 
+/* ! Ships section */
+
+.playerShips button:enabled {
+  border: 1.5px dashed white;
+  border-radius: 10px;
+  background-color: lightgray;
+}
+
 .ships {
   margin: 5px 0;
   height: 105px;
-  width: 500px;
-  background-color: white;
+  width: 300px;
+  background-color: rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: space-between;
   align-items: start;
@@ -192,7 +236,8 @@ main {
 .boatLarge {
   height: 90px;
   width: 30px;
-  border: 1px solid black;
+  border: 1.5px dashed white;
+  border-radius: 10px;
   margin: 5px;
   background-image: url(../assets/ship.png);
   background: cover;
@@ -201,39 +246,85 @@ main {
 .boatMedium {
   height: 75px;
   width: 30px;
-  border: 1px solid black;
+  border: 1.5px dashed white;
+  border-radius: 10px;
   margin: 5px;
 }
 
 .boatMedium2 {
   height: 75px;
   width: 30px;
-  border: 1px solid black;
+  border: 1.5px dashed white;
+  border-radius: 10px;
   margin: 5px;
 }
 
 .boatSmall {
   height: 50px;
   width: 30px;
-  border: 1px solid black;
+  border: 1.5px dashed white;
+  border-radius: 10px;
   margin: 5px;
 }
 
 .boatXSmall {
   height: 30px;
   width: 30px;
-  border: 1px solid black;
+  border: 1.5px dashed white;
+  border-radius: 10px;
   margin: 5px;
 }
 
-@media (min-width: 1300px) {
-  body {
-    height: 100vh;
+/* Larger than 13inch MacBook */
+@media (min-width: 1600px) {
+  .playerAvatar {
+    display: none;
+  }
+  
+  .cpuAvatar {
+    display: none;
   }
 
-  h1 {
-    margin-top: 10px;
-    margin-bottom: 15px;
+  .playerComponents {
+  width: 750px;
+}
+
+.cpuComponents {
+  width: 750px;
+}
+
+  .playerAvatarBig {
+    display: block;
+  }
+  
+  .cpuAvatarBig {
+    display: block;
+  }
+
+  .playerAvatar2 {
+    height: 700px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: end;
+  }
+
+  .cpuAvatar2 {
+    height: 700px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: end;
+  }
+
+  .playerAvatarBig {
+    width: 200px;
+  }
+
+  .cpuAvatarBig {
+    width: 250px;
   }
 
   .ships {
@@ -244,19 +335,19 @@ main {
     height: 100px;
     margin: 10px;
   }
-  
+
   .boatMedium {
     margin: 10px;
   }
-  
+
   .boatMedium2 {
     margin: 10px;
   }
-  
+
   .boatSmall {
     margin: 10px;
   }
-  
+
   .boatXSmall {
     margin: 10px;
   }
