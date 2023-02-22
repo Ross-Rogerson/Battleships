@@ -239,7 +239,6 @@ main {
   border: 1.5px dashed white;
   border-radius: 10px;
   margin: 5px;
-  background-image: url(../assets/ship.png);
   background: cover;
 }
 
@@ -275,28 +274,56 @@ main {
   margin: 5px;
 }
 
+.shake {
+  animation: shake 2s;
+}
+
+@keyframes shake {
+
+  10%,
+  90% {
+    transform: translateY(-8px);
+  }
+
+  20%,
+  80% {
+    transform: translateY(12px);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translateY(-16px);
+  }
+
+  40%,
+  60% {
+    transform: translateY(16px);
+  }
+}
+
 /* Larger than 13inch MacBook */
 @media (min-width: 1600px) {
   .playerAvatar {
     display: none;
   }
-  
+
   .cpuAvatar {
     display: none;
   }
 
   .playerComponents {
-  width: 750px;
-}
+    width: 750px;
+  }
 
-.cpuComponents {
-  width: 750px;
-}
+  .cpuComponents {
+    width: 750px;
+  }
 
   .playerAvatarBig {
     display: block;
   }
-  
+
   .cpuAvatarBig {
     display: block;
   }

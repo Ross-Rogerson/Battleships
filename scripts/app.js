@@ -88,6 +88,8 @@ function init() {
   const reset = document.querySelector('.reset')
   const forfeit = document.querySelector('.forfeit')
   const playerShipBtns = document.querySelectorAll('.playerShips Button')
+  const playerGridContainer = document.querySelector('.playerComponents .gridContainer')
+  const cpuGridContainer = document.querySelector('.cpuComponents .gridContainer')
 
   const width = 10
   const cellCount = width * width
@@ -133,6 +135,7 @@ function init() {
 
   function clear() {
     clearGrids()
+    clearGridsAnimation()
     resetCPUShips()
     resetPlayerships()
     clearCellArrays()
@@ -146,7 +149,6 @@ function init() {
   }
 
   function clearGrids() {
-    console.log(playerMisses)
     for (let i = 0; i < occupiedCellsPlayer.length; i++) {
       const index = occupiedCellsPlayer[i]
       playerCells[index].classList.remove('shipPlacedMarker')
@@ -172,6 +174,17 @@ function init() {
       playerCells[index].classList.remove('miss')
       playerCells[index].classList.add('normal')
     }
+  }
+
+  function clearGridsAnimation() {
+    playerGridContainer.classList.add('shake')
+    setTimeout(() => {
+      playerGridContainer.classList.remove('shake')
+    }, 2000)
+    cpuGridContainer.classList.add('shake')
+    setTimeout(() => {
+      cpuGridContainer.classList.remove('shake')
+    }, 2000)
   }
 
   function disableBtns() {
