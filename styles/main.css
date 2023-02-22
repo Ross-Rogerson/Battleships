@@ -3,13 +3,16 @@
 }
 
 body {
-  height: 100vh;
+  height: 100%;
   margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-color: rgb(43, 55, 42);
+  background-image: url(../assets/background.jpg);
+  background-size: cover;
+  background-position-y: bottom;
+  overflow: hidden;
 }
 
 header {
@@ -17,7 +20,7 @@ header {
   justify-content: center;
   align-items: end;
   max-width: 1150px;
-  height: 200px;
+  height: 175px;
 }
 
 .headingAndSpeech {
@@ -31,15 +34,20 @@ header {
 h1 {
   font-size: 80px;
   padding: 0;
-  margin-top: 10px;
-  margin-bottom: 15px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   text-decoration: underline;
   color: white;
 }
 
-.avatarConatiner {
+.avatarConatiner{
   height: 125px;
-  width: 125px;
+  width: 150px;
+}
+
+.playerAvatarConatiner{
+  height: 125px;
+  width: 150px;
 }
 
 .playerAvatar {
@@ -61,8 +69,8 @@ h1 {
 
 .playerSpeech {
   height: inherit;
-  width: 425px;
-  margin: 0 10px;
+  width: 400px;
+  margin: 0 10px 5px 0;
   background-color: white;
   border: solid black 1px;
   text-align: left;
@@ -70,8 +78,8 @@ h1 {
 
 .cpuSpeech {
   height: inherit;
-  width: 425px;
-  margin: 0 10px;
+  width: 400px;
+  margin: 0 0 5px 10px;
   background-color: white;
   border: solid black 1px;
   text-align: right;
@@ -81,7 +89,6 @@ main {
   display: flex;
   justify-content: center;
   max-width: 1150px;
-  margin-top: 10px;
 }
 
 .grid {
@@ -93,6 +100,9 @@ main {
   justify-content: space-between;
   height: 500px;
   width: 500px;
+  background-color: rgb(124, 230, 194);
+  /* background-color: rgb(127, 255, 212); */
+  border: 3px solid rgba(0, 0, 0, 0.9);
 }
 
 
@@ -134,7 +144,7 @@ main {
   flex-grow: 1;
   height: 10%;
   width: 10%;
-  background-color: rgb(138,146,94)
+  background-color: transparent;
 }
 
 .setUp {
@@ -170,8 +180,8 @@ main {
 }
 
 .ships {
-  margin: 10px 0;
-  height: 125px;
+  margin: 5px 0;
+  height: 105px;
   width: 500px;
   background-color: white;
   display: flex;
@@ -180,36 +190,74 @@ main {
 }
 
 .boatLarge {
-  height: 100px;
+  height: 90px;
   width: 30px;
   border: 1px solid black;
-  margin: 10px;
+  margin: 5px;
+  background-image: url(../assets/ship.png);
+  background: cover;
 }
 
 .boatMedium {
   height: 75px;
   width: 30px;
   border: 1px solid black;
-  margin: 10px;
+  margin: 5px;
 }
 
 .boatMedium2 {
   height: 75px;
   width: 30px;
   border: 1px solid black;
-  margin: 10px;
+  margin: 5px;
 }
 
 .boatSmall {
   height: 50px;
   width: 30px;
   border: 1px solid black;
-  margin: 10px;
+  margin: 5px;
 }
 
 .boatXSmall {
   height: 30px;
   width: 30px;
   border: 1px solid black;
-  margin: 10px;
+  margin: 5px;
+}
+
+@media (min-width: 1300px) {
+  body {
+    height: 100vh;
+  }
+
+  h1 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+
+  .ships {
+    height: 120px;
+  }
+
+  .boatLarge {
+    height: 100px;
+    margin: 10px;
+  }
+  
+  .boatMedium {
+    margin: 10px;
+  }
+  
+  .boatMedium2 {
+    margin: 10px;
+  }
+  
+  .boatSmall {
+    margin: 10px;
+  }
+  
+  .boatXSmall {
+    margin: 10px;
+  }
 }

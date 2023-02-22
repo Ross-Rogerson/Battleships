@@ -108,8 +108,8 @@ function init() {
   function createGrids() {
     for (let i = 0; i < cellCount; i++) {
       const cell = document.createElement('button')
-      cell.innerText = i
       cell.dataset.index = i
+      cell.innerText = 'O'
       cell.classList.add('normal')
       cell.id = i
       playerGrid.appendChild(cell)
@@ -117,8 +117,8 @@ function init() {
     }
     for (let i = 0; i < cellCount; i++) {
       const cell = document.createElement('button')
-      cell.innerText = i
       cell.dataset.index = i
+      cell.innerText = 'O'
       cell.classList.add('normal')
       cpuGrid.appendChild(cell)
       cpuCells.push(cell)
