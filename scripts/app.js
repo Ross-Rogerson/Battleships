@@ -628,7 +628,8 @@ function init() {
         let looping = true
         let possiblePositon = []
         while (looping) {
-          const randomCell = Math.floor(Math.random() * 10) * 10 + (Math.floor(Math.random() * ((9 - shipSize) + 1)) + 1)
+          // Generate a random multiple of the width and add a random integer between 0 and the width - (shipsize -1). Simplify as - (shipsize - 1) = - shipsize + 1
+          const randomCell = Math.floor(Math.random() * width) * width + Math.floor(Math.random() * (width - shipSize + 1))
           requiredCellsRight(randomCell, shipSize, possiblePositon)
           if (occupiedCheck(possiblePositon, occupiedCellsCPU) === false) {
             looping = false
@@ -645,7 +646,8 @@ function init() {
         let looping = true
         let possiblePositon = []
         while (looping) {
-          const randomCell = Math.floor(Math.random() * 10) * 10 + Math.floor(Math.random() * (9 - (shipSize - 1) + 1)) + (shipSize - 1)
+          // Generate a random multiple of the width, add a random integer between 0 and the width shipsize + 1 and add shipsize - 1
+          const randomCell = Math.floor(Math.random() * width) * width + Math.floor(Math.random() * (width - shipSize + 1)) + (shipSize - 1)
           requiredCellsLeft(randomCell, shipSize, possiblePositon)
           if (occupiedCheck(possiblePositon, occupiedCellsCPU) === false) {
             looping = false
