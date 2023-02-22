@@ -7,6 +7,8 @@
   <link rel="stylesheet" type="text/css" href="styles/main.css">
   <script src="scripts/app.js" charset="utf-8"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Nunito:wght@400;700;900&family=Tilt+Warp&display=swap" rel="stylesheet">
+  <audio src="./assets/lose.mp3" class="lose"></audio>
+  <audio src="./assets/win.mp3" class="win"></audio>
 </head>
 
 <body>
@@ -25,6 +27,7 @@
       <section class="gridContainer">
         <section class="grid playerGrid"></section>
       </section>
+      <div class="nameBar"><span class="character">Woody</span><span class="identifier">You</span></div>
       <div class="ships playerShips">
         <button class="boatLarge" value="1"></button>
         <button class="boatMedium" value="2"></button>
@@ -38,7 +41,7 @@
       <div class="setUpButtons">
         <button class="start">Start</button>
         <button class="reset">Reset</button>
-        <button class="forfeit">Forfeit</button>
+        <div class="commentary"></div>
       </div>
     </section>
 
@@ -46,6 +49,7 @@
       <section class="gridContainer">
         <section class="grid cpuGrid"></section>
       </section>
+      <div class="nameBar"><span class="character">Mr. Potato Head</span><span class="identifier">Computer</span></div>
       <div class="ships cpuShips">
         <div class="boatXSmall"></div>
         <div class="boatSmall"></div>

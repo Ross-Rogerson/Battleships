@@ -81,6 +81,7 @@ function init() {
   const cpuPreviousAttacks = []
   const playerGrid = document.querySelector('.playerGrid')
   const cpuGrid = document.querySelector('.cpuGrid')
+  const commentary = document.querySelector('.commentary')
   let currentAttackHits = []
   let currentAttack = []
 
@@ -90,6 +91,7 @@ function init() {
   const playerShipBtns = document.querySelectorAll('.playerShips Button')
   const playerGridContainer = document.querySelector('.playerComponents .gridContainer')
   const cpuGridContainer = document.querySelector('.cpuComponents .gridContainer')
+  const audioclip = document.querySelector('.clip1')
 
   const width = 10
   const cellCount = width * width
@@ -203,24 +205,6 @@ function init() {
     }, 100)
   }
 
-  function giveUp() {
-    for (let i = 0; i < enemyShips.length; i++) {
-      console.log(enemyShips[i].position)
-      console.log(enemyShips[i].hitsTaken)
-      console.log(playerShips[i].position)
-      console.log(playerShips[i].hitsTaken)
-    }
-    console.log(unoccupiedCellsPlayer)
-    console.log(occupiedCellsCPU)
-    console.log(occupiedCellsPlayer)
-    console.log(playerHitsTaken)
-    console.log(cpuHitsTaken)
-    console.log(cpuPreviousAttacks)
-    console.log(cpuPreviousAttackHit)
-    console.log(cellsRequiredToPlace)
-    console.log(direction)
-  }
-
   function clearCellArrays() {
     unoccupiedCellsPlayer.splice(0)
     occupiedCellsCPU.splice(0)
@@ -253,10 +237,15 @@ function init() {
   function begin() {
     start.disabled = true
     reset.disabled = false
-    forfeit.disabled = false
     placeCPUShips()
     unlockShipBtns()
+    instructPlaceShips()
   }
+
+  function instructPlaceShips() {
+    commentary.innerText = 'Select a ship to begin!'
+  }
+
 
   function unlockShipBtns() {
     playerShipBtns.forEach(btn => btn.disabled = false)
@@ -574,9 +563,7 @@ function init() {
         playerShips[iterate].hitsTaken++
         if (playerShips[iterate].hitsTaken >= parseInt(playerShips[iterate].length)) {
           console.log('ship destroyed')
-          cpuPreviousAttackHit = -1
-          currentAttackHits = []
-          currentAttack = []
+          playerShipDestroyed(iterate)
           searching = false
         } else {
           searching = false
@@ -585,6 +572,18 @@ function init() {
         iterate++
       }
     }
+  }
+
+  function playerShipDestroyed(iterate) {
+    cpuPreviousAttackHit = -1
+    currentAttackHits = []
+    currentAttack = []
+    playerShipDestoredisuals(iterate)
+  }
+
+  function playerShipDestoredisuals(iterate) {
+    commentary.innerText = 'Oh no, one of your ships has been destroyed!'
+    playerShipBtns[iterate].classList.add('destroyed')
   }
 
   function cpuWinCheck() {
@@ -779,8 +778,7 @@ function init() {
 
   playerCells.forEach(btn => btn.disabled = true)
 
-  forfeit.addEventListener('click', giveUp)
-  forfeit.disable = true
+
   reset.addEventListener('click', clear)
   reset.disable = true
 

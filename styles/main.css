@@ -79,7 +79,6 @@ main {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  /* width: 750px; */
 }
 
 .cpuComponents {
@@ -87,7 +86,6 @@ main {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  /* width: 750px; */
 }
 
 .playerAvatarBig {
@@ -183,48 +181,86 @@ main {
 /* ! Setup buttons section */
 
 .setUp {
-  text-align: center;
-  width: 150px;
+  width: 200px;
   height: 600px;
+}
+.setUpButtons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
 }
 
 .setUp button {
-  width: 125px;
+  width: 180px;
   border-radius: 10px;
-  font-size: 20px;
   font-weight: bold;
 }
 
 .start {
   height: 75px;
   margin-top: 15px;
-  margin-bottom: 80px;
+  margin-bottom: 40px;
   background-color: rgb(14, 172, 14);
+  font-size: 30px;
   color: white;
 }
 
 .reset {
   height: 50px;
-  margin: 40px 0;
   background-color: rgb(234, 234, 21);
+  font-size: 25px;
 }
 
-.forfeit {
-  height: 50px;
-  margin: 40px 0;
+.commentary {
+  margin-top: 60px;
+  margin-bottom: 25px;
+  border: #1a48a0 solid 3px;
+  height: 200px;
+  width: 180px;
+  border-radius: 10px;
   background-color: white;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 /* ! Ships section */
 
+.nameBar {
+  background-color: rgba(0, 0, 0, 0.5);
+  margin-top: 5px;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  color: white;
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.character {
+  padding-left: 10px;
+  font-size: 18px;
+  font-weight: lighter;
+}
+
+.identifier {
+  padding-right: 10px;
+  font-style: italic;
+  font-weight: lighter;
+  font-size: 14px;
+}
+
 .playerShips button:enabled {
-  border: 1.5px dashed white;
+  border: 1.5px dashed rgb(14, 172, 14);
   border-radius: 10px;
-  background-color: lightgray;
+  background-color: rgba(0, 128, 0, 0.3);
 }
 
 .ships {
-  margin: 5px 0;
   height: 105px;
   width: 300px;
   background-color: rgba(0, 0, 0, 0.2);
@@ -239,7 +275,6 @@ main {
   border: 1.5px dashed white;
   border-radius: 10px;
   margin: 5px;
-  background: cover;
 }
 
 .boatMedium {
@@ -274,32 +309,9 @@ main {
   margin: 5px;
 }
 
-.shake {
-  animation: shake 2s;
-}
-
-@keyframes shake {
-
-  10%,
-  90% {
-    transform: translateY(-8px);
-  }
-
-  20%,
-  80% {
-    transform: translateY(12px);
-  }
-
-  30%,
-  50%,
-  70% {
-    transform: translateY(-16px);
-  }
-
-  40%,
-  60% {
-    transform: translateY(16px);
-  }
+.destroyed {
+  background-color: rgba(255, 0, 0, 0.2);
+  border: 1.5px dashed rgba(255, 0, 0, 0.8);
 }
 
 /* Larger than 13inch MacBook */
@@ -377,5 +389,33 @@ main {
 
   .boatXSmall {
     margin: 10px;
+  }
+}
+
+.shake {
+  animation: shake 2s;
+}
+
+@keyframes shake {
+
+  10%,
+  90% {
+    transform: translateY(-8px);
+  }
+
+  20%,
+  80% {
+    transform: translateY(12px);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translateY(-16px);
+  }
+
+  40%,
+  60% {
+    transform: translateY(16px);
   }
 }
