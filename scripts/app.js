@@ -139,117 +139,7 @@ function init() {
     }
   }
 
-  function populateUnoccupiedCellsPlayer() {
-    for (let i = 0; i < cellCount; i++) {
-      unoccupiedCellsPlayer.push(i)
-    }
-  }
 
-  function clear() {
-    clearGrids()
-    clearGridsAnimation()
-    resetCPUShips()
-    resetPlayerships()
-    clearCellArrays()
-    populateUnoccupiedCellsPlayer()
-    direction = 'down'
-    cpuPreviousAttackHit = -1
-    currentAttack = []
-    currentAttackHits = []
-    disableBtns()
-    enableStart()
-    reset.disabled = true
-  }
-
-  function clearGrids() {
-    for (let i = 0; i < occupiedCellsPlayer.length; i++) {
-      const index = occupiedCellsPlayer[i]
-      playerCells[index].classList.remove('shipPlacedMarker')
-      playerCells[index].classList.add('normal')
-    }
-    for (let i = 0; i < cpuHitsTaken.length; i++) {
-      const index = cpuHitsTaken[i]
-      cpuCells[index].classList.remove('hit')
-      cpuCells[index].classList.add('normal')
-    }
-    for (let i = 0; i < playerHitsTaken.length; i++) {
-      const index = playerHitsTaken[i]
-      playerCells[index].classList.remove('hit')
-      playerCells[index].classList.add('normal')
-    }
-    for (let i = 0; i < playerMisses.length; i++) {
-      const index = playerMisses[i]
-      cpuCells[index].classList.remove('miss')
-      cpuCells[index].classList.add('normal')
-    }
-    for (let i = 0; i < cpuMisses.length; i++) {
-      const index = cpuMisses[i]
-      playerCells[index].classList.remove('miss')
-      playerCells[index].classList.add('normal')
-    }
-    clearShipDestroyedMarkers()
-    setTimeout(() => {
-      playerShipBtns.forEach(btn => btn.disabled = true)
-    }, 100)
-    commentary.innerText = 'Woody\n\nvs.\n\nMr. Potato Head!'
-  }
-
-  function clearShipDestroyedMarkers() {
-    for (let i = 0; i < playerShipBtns.length; i++) {
-      playerShipBtns[i].classList.remove('destroyed')
-      enemyShipDivs[i].classList.remove('destroyed')
-    }
-  }
-
-  function clearGridsAnimation() {
-    playerGridContainer.classList.add('shake')
-    setTimeout(() => {
-      playerGridContainer.classList.remove('shake')
-    }, 2000)
-    cpuGridContainer.classList.add('shake')
-    setTimeout(() => {
-      cpuGridContainer.classList.remove('shake')
-    }, 2000)
-  }
-
-  function disableBtns() {
-    setTimeout(() => {
-      playerShipBtns.forEach(btn => btn.disabled = true)
-      playerCells.forEach(btn => btn.disabled = true)
-      cpuCells.forEach(btn => btn.disabled = true)
-    }, 200)
-  }
-
-  function enableStart() {
-    setTimeout(() => {
-      start.disabled = false
-    }, 1000)
-  }
-
-  function clearCellArrays() {
-    unoccupiedCellsPlayer.splice(0)
-    occupiedCellsCPU.splice(0)
-    occupiedCellsPlayer.splice(0)
-    playerHitsTaken.splice(0)
-    cpuHitsTaken.splice(0)
-    cpuPreviousAttacks.splice(0)
-    playerMisses.splice(0)
-    cpuMisses.splice(0)
-  }
-
-  function resetCPUShips() {
-    for (let i = 0; i < enemyShips.length; i++) {
-      enemyShips[i].position = []
-      enemyShips[i].hitsTaken = 0
-    }
-  }
-
-  function resetPlayerships() {
-    for (let i = 0; i < enemyShips.length; i++) {
-      playerShips[i].position = []
-      playerShips[i].hitsTaken = 0
-    }
-  }
 
   // ! Executions
   // start() -> enable ship placement buttons
@@ -785,12 +675,12 @@ function init() {
     return requiredCells.some(cell => occupiedCells.includes(cell))
   }
 
-  // Cells >= 0
+  // Checks required cells are >= 0
   function withinLowerLimit(requiredCells) {
     return requiredCells.every(num => num >= 0)
   }
 
-  // Cells <= 99
+  // Checks required cells are  <= 99
   function withinUpperLimit(requiredCells) {
     return requiredCells.every(num => num < cellCount)
   }
@@ -827,6 +717,128 @@ function init() {
     playerShips[currentShipIndex].position = possiblePositon
   }
 
+  // Populates player unoccupied cells array 
+  function populateUnoccupiedCellsPlayer() {
+    for (let i = 0; i < cellCount; i++) {
+      unoccupiedCellsPlayer.push(i)
+    }
+  }
+
+  // Resets game
+  function clear() {
+    clearGrids()
+    clearGridsAnimation()
+    resetCPUShips()
+    resetPlayerships()
+    clearCellArrays()
+    populateUnoccupiedCellsPlayer()
+    direction = 'down'
+    cpuPreviousAttackHit = -1
+    currentAttack = []
+    currentAttackHits = []
+    disableBtns()
+    enableStart()
+    reset.disabled = true
+  }
+
+  // Clears grids - part of reset
+  function clearGrids() {
+    for (let i = 0; i < occupiedCellsPlayer.length; i++) {
+      const index = occupiedCellsPlayer[i]
+      playerCells[index].classList.remove('shipPlacedMarker')
+      playerCells[index].classList.add('normal')
+    }
+    for (let i = 0; i < cpuHitsTaken.length; i++) {
+      const index = cpuHitsTaken[i]
+      cpuCells[index].classList.remove('hit')
+      cpuCells[index].classList.add('normal')
+    }
+    for (let i = 0; i < playerHitsTaken.length; i++) {
+      const index = playerHitsTaken[i]
+      playerCells[index].classList.remove('hit')
+      playerCells[index].classList.add('normal')
+    }
+    for (let i = 0; i < playerMisses.length; i++) {
+      const index = playerMisses[i]
+      cpuCells[index].classList.remove('miss')
+      cpuCells[index].classList.add('normal')
+    }
+    for (let i = 0; i < cpuMisses.length; i++) {
+      const index = cpuMisses[i]
+      playerCells[index].classList.remove('miss')
+      playerCells[index].classList.add('normal')
+    }
+    clearShipDestroyedMarkers()
+    setTimeout(() => {
+      playerShipBtns.forEach(btn => btn.disabled = true)
+    }, 100)
+    commentary.innerText = 'Woody\n\nvs.\n\nMr. Potato Head!'
+  }
+
+  // Removes destroyed ship class - part of reset
+  function clearShipDestroyedMarkers() {
+    for (let i = 0; i < playerShipBtns.length; i++) {
+      playerShipBtns[i].classList.remove('destroyed')
+      enemyShipDivs[i].classList.remove('destroyed')
+    }
+  }
+
+  // Clears cell arrays - part of reset
+  function clearCellArrays() {
+    unoccupiedCellsPlayer.splice(0)
+    occupiedCellsCPU.splice(0)
+    occupiedCellsPlayer.splice(0)
+    playerHitsTaken.splice(0)
+    cpuHitsTaken.splice(0)
+    cpuPreviousAttacks.splice(0)
+    playerMisses.splice(0)
+    cpuMisses.splice(0)
+  }
+
+  // Shakes the grids - part of reset
+  function clearGridsAnimation() {
+    playerGridContainer.classList.add('shake')
+    setTimeout(() => {
+      playerGridContainer.classList.remove('shake')
+    }, 2000)
+    cpuGridContainer.classList.add('shake')
+    setTimeout(() => {
+      cpuGridContainer.classList.remove('shake')
+    }, 2000)
+  }
+
+  // Resets CPU ship objects - part of reset
+  function resetCPUShips() {
+    for (let i = 0; i < enemyShips.length; i++) {
+      enemyShips[i].position = []
+      enemyShips[i].hitsTaken = 0
+    }
+  }
+
+  // Resets player ship objects - part of reset
+  function resetPlayerships() {
+    for (let i = 0; i < enemyShips.length; i++) {
+      playerShips[i].position = []
+      playerShips[i].hitsTaken = 0
+    }
+  }
+
+  // Disables buttons prior to game start
+  function disableBtns() {
+    setTimeout(() => {
+      playerShipBtns.forEach(btn => btn.disabled = true)
+      playerCells.forEach(btn => btn.disabled = true)
+      cpuCells.forEach(btn => btn.disabled = true)
+    }, 200)
+  }
+
+  // Enables start button after reset
+  function enableStart() {
+    setTimeout(() => {
+      start.disabled = false
+    }, 1000)
+  }
+
   // ! Page load
   createGrids()
 
@@ -836,11 +848,8 @@ function init() {
 
   start.addEventListener('click', begin)
 
-  // playerCells buttons for placing ships
   playerCells.forEach(btn => {
     btn.addEventListener('click', placeShip)
-  })
-  playerCells.forEach(btn => {
     btn.addEventListener('mouseover', updateCurrentCell)
     btn.addEventListener('mouseover', updateCellsRequired)
     btn.addEventListener('mouseover', outlineCellsRequired)
