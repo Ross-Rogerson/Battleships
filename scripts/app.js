@@ -87,12 +87,12 @@ function init() {
 
   const start = document.querySelector('.start')
   const reset = document.querySelector('.reset')
-  const forfeit = document.querySelector('.forfeit')
   const playerShipBtns = document.querySelectorAll('.playerShips Button')
   const enemyShipDivs = document.querySelectorAll('.cpuShips Div')
   const playerGridContainer = document.querySelector('.playerComponents .gridContainer')
   const cpuGridContainer = document.querySelector('.cpuComponents .gridContainer')
   const audioclip = document.querySelector('.clip1')
+  const marker = document.querySelector('.markerAudio')
 
   const width = 10
   const cellCount = width * width
@@ -149,6 +149,7 @@ function init() {
     currentAttackHits = []
     disableBtns()
     enableStart()
+    reset.disabled = true
   }
 
   function clearGrids() {
@@ -177,11 +178,11 @@ function init() {
       playerCells[index].classList.remove('miss')
       playerCells[index].classList.add('normal')
     }
-    unlockShipBtns()
     clearShipDestroyedMarkers()
     setTimeout(() => {
       playerShipBtns.forEach(btn => btn.disabled = true)
     }, 100)
+    commentary.innerText = 'Woody\nvs.\nMr. Potato Head!'
   }
 
   function clearShipDestroyedMarkers() {
@@ -214,7 +215,7 @@ function init() {
   function enableStart() {
     setTimeout(() => {
       start.disabled = false
-    }, 2000)
+    }, 1000)
   }
 
   function clearCellArrays() {
@@ -386,6 +387,7 @@ function init() {
   function playerAttacks() {
     playerAttack = parseInt(this.dataset.index)
     playerAttackResult = occupiedCellsCPU.includes(playerAttack)
+    marker.play()
     updateTargetCell()
     // lockEnemyGrid()
   }
@@ -398,9 +400,9 @@ function init() {
       shipDestroyedCheck()
       playerWinCheck()
     } else {
-      cpuCells[playerAttack].classList.add('miss')
+      missMarker(cpuCells, playerAttack)
       playerMisses.push(playerAttack)
-      cpuAttacks()
+      cpuTurn()
     }
     cpuCells[playerAttack].disabled = true
   }
@@ -433,12 +435,18 @@ function init() {
     enemyShipDivs[enemyShips.length - 1 - iterate].classList.add('destroyed')
   }
 
+  function cpuTurn() {
+    setTimeout(() => {
+      cpuAttacks()
+    },1150)
+  }
+
   function playerWinCheck() {
     if (cpuHitsTaken.length >= 13) {
       lockEnemyGrid()
       commentary.innerText = 'That\'s all of them - YOU WIN!'
     } else {
-      cpuAttacks()
+      cpuTurn()
     }
   }
 
@@ -454,6 +462,7 @@ function init() {
   // TRUE, randCell on player grid, if compShots.includes(randCell) = true, restart function, else compShotCoordinate = randCell...
   // ELSE, compShotAfterHit()
   function cpuAttacks() {
+    marker.play()
     if (cpuPreviousAttackHit < 0) {
       let targeting = true
       while (targeting) {
@@ -546,8 +555,16 @@ function init() {
     } else {
       cpuMisses.push(cpuAttack)
       cpuPreviousAttackHit = -1
-      playerCells[cpuAttack].classList.add('miss')
+      missMarker(playerCells, cpuAttack)
     }
+  }
+
+  function missMarker(grid, cell) {
+    grid[cell].classList.add('missLine')
+    setTimeout(() => {
+      grid[cell].classList.remove('missLine')
+      grid[cell].classList.add('miss')
+    }, 200)
   }
 
   function updateFollowingCPUAttack() {
@@ -564,7 +581,7 @@ function init() {
       console.log(currentAttack)
     } else {
       cpuMisses.push(cpuAttack)
-      playerCells[cpuAttack].classList.add('miss')
+      missMarker(playerCells, cpuAttack)
     }
   }
 
@@ -800,7 +817,7 @@ function init() {
 
 
   reset.addEventListener('click', clear)
-  reset.disable = true
+  reset.disabled = true
 
   playerShipBtns.forEach(btn => btn.addEventListener('click', selectShip))
   playerShipBtns.forEach(btn => btn.disabled = true)

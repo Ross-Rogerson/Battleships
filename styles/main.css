@@ -159,14 +159,26 @@ main {
   flex-grow: 1;
   height: 10%;
   width: 10%;
-  background-image: url(../assets/blue-marker.png);
-  background-size: 35%;
+  background-image: url(../assets/blue-cross.png);
+  background-size: 60%;
   background-position: center;
   background-repeat: no-repeat;
   color: transparent;
   background-color: transparent;
 }
 
+.missLine {
+  border: 1px solid lightslategray;
+  flex-grow: 1;
+  height: 10%;
+  width: 10%;
+  background-image: url(../assets/blue-line.png);
+  background-size: 60%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
+  background-color: transparent;
+}
 
 .normal {
   border: 1px solid black;
@@ -206,10 +218,18 @@ main {
   color: white;
 }
 
+.start:enabled {
+  cursor: pointer;
+}
+
 .reset {
   height: 50px;
   background-color: rgb(234, 234, 21);
   font-size: 25px;
+}
+
+.reset:enabled {
+  cursor: pointer;
 }
 
 .commentary {
@@ -258,6 +278,7 @@ main {
   border: 1.5px dashed rgb(14, 172, 14);
   border-radius: 10px;
   background-color: rgba(0, 128, 0, 0.3);
+  cursor: pointer;
 }
 
 .ships {
@@ -393,7 +414,7 @@ main {
 }
 
 .shake {
-  animation: shake 2s;
+  animation: shake 1s;
 }
 
 @keyframes shake {
