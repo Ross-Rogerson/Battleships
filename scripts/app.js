@@ -312,24 +312,25 @@ function init() {
   function updateCellsRequired() {
     if (direction === 'down') {
       requiredCellsDown(currentCell, currentShipLength, cellsRequiredToPlace)
-      // console.log(cellsRequiredToPlace)
     } else if (direction === 'right') {
       requiredCellsRight(currentCell, currentShipLength, cellsRequiredToPlace)
-      // console.log(cellsRequiredToPlace)
     } else if (direction === 'up') {
       requiredCellsUp(currentCell, currentShipLength, cellsRequiredToPlace)
-      // console.log(cellsRequiredToPlace)
     } else {
       requiredCellsLeft(currentCell, currentShipLength, cellsRequiredToPlace)
-      // console.log(cellsRequiredToPlace)
     }
   }
 
   function outlineCellsRequired() {
     for (let i = 0; i < cellsRequiredToPlace.length; i++) {
       const index = cellsRequiredToPlace[i]
-      playerCells[index].classList.remove('normal')
-      playerCells[index].classList.add('shipOutline')
+      if ((direction === 'right' && parseInt(cellsRequiredToPlace[i]) % width < parseInt(cellsRequiredToPlace[0]) % width) ||
+        (direction === 'left' && parseInt(cellsRequiredToPlace[i]) % width > parseInt(cellsRequiredToPlace[0]) % width)) {
+        //
+      } else {
+        playerCells[index].classList.remove('normal')
+        playerCells[index].classList.add('shipOutline')
+      }
     }
   }
 
@@ -357,8 +358,10 @@ function init() {
       resetCurrentShip()
       startBattle()
       console.log(occupiedCellsPlayer)
+    } else if (occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === true) {
+      commentary.innerText = 'Hmm, we can\'t\nseem to draw this on your Etch-A-Sketch.\n\nRemember your\nships can\'t overlap.\n\nHave another go.'
     } else {
-      console.log('NOT PLACED')
+      commentary.innerText = 'Uh-oh, your\nEtch-A-Sketch doesn\'t like that position.\n\nMake sure the whole ship is on the grid\nand try again.'
     }
   }
 
