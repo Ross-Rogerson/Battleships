@@ -17,9 +17,12 @@ function init() {
   const enemyShipDivs = document.querySelectorAll('.cpuShips Div')
   const playerGridContainer = document.querySelector('.playerComponents .gridContainer')
   const cpuGridContainer = document.querySelector('.cpuComponents .gridContainer')
-  const loseAudio = document.querySelector('.lose')
-  const winAudio = document.querySelector('.win')
+  const end = document.querySelector('.end')
+  const toy = document.querySelector('.TOY')
   const marker = document.querySelector('.markerAudio')
+  const startBtnSound = document.querySelector('.startBtnSound')
+  const place = document.querySelector('.place')
+  const whatAreYouDoing = document.querySelector('.what-are-you-doing')
   const playerGrid = document.querySelector('.playerGrid')
   const cpuGrid = document.querySelector('.cpuGrid')
   const commentary = document.querySelector('.commentary')
@@ -116,7 +119,10 @@ function init() {
   let cpuAttackResult = true
   let cpuPreviousAttackHit = -1
   let cpuAttack = 0
+  let time = 1150
   marker.volume = 0.05
+  place.volume = 0.2
+  startBtnSound.volume = 0.7
 
   // Create grids
   function createGrids() {
@@ -144,11 +150,13 @@ function init() {
   // ! Executions
   // start() -> enable ship placement buttons
   function begin() {
+    console.log('start')
     start.disabled = true
     reset.disabled = false
     placeCPUShips()
     unlockShipBtns()
     instructPlaceShips()
+    startBtnSound.play()
   }
 
   function instructPlaceShips() {
@@ -242,9 +250,9 @@ function init() {
 
   function placeShip() {
     if ((direction === 'up' || direction === 'down') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false) {
-      console.log('')
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
       playerShipBtns[currentShipIndex].disabled = true
+      place.play()
       shipPlaced()
       resetCurrentShip()
       startBattle()
@@ -252,14 +260,15 @@ function init() {
       sameLine(cellsRequiredToPlace)) {
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
       playerShipBtns[currentShipIndex].disabled = true
+      place.play()
       shipPlaced()
       resetCurrentShip()
       startBattle()
       console.log(occupiedCellsPlayer)
     } else if (occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === true) {
-      commentary.innerText = 'Hmm, we can\'t\nseem to draw this on your\nEtch-A-Sketch.\n\nRemember your\nships can\'t overlap.'
+      commentary.innerText = 'Hmm, Etch can\'t\nseem to draw this.\n\nRemember your\nships can\'t overlap.'
     } else {
-      commentary.innerText = 'Uh-oh, your\nEtch-A-Sketch won\'t let you place the ship there.\n\nMake sure the whole ship is on the grid and try\nagain.'
+      commentary.innerText = 'Uh-oh,Etch won\'t\nlet you place the ship there.\n\nMake sure the whole ship is on the grid and try again.'
     }
   }
 
@@ -328,6 +337,10 @@ function init() {
   function cpuShipDestroyed(iterate) {
     commentary.innerText = 'You destroyed\none of Mr. Potato Head\'s ships!\n\nKeep up the good work!'
     enemyShipDivs[enemyShips.length - 1 - iterate].classList.add('destroyed')
+    if (cpuHitsTaken.length > 6 && cpuHitsTaken.length < 8) {
+      toy.play()
+      time = 4000
+    }
   }
 
   function hitMarker(grid, cell) {
@@ -349,12 +362,12 @@ function init() {
   function cpuTurn() {
     setTimeout(() => {
       cpuAttacks()
-    }, 1150)
+    }, time)
   }
 
   function playerWinCheck() {
     if (cpuHitsTaken.length >= 13) {
-      winAudio.play()
+      end.play()
       commentary.innerText = 'That\'s all of them -\nYOU WIN!'
       lockEnemyGrid()
     } else {
@@ -372,6 +385,7 @@ function init() {
   // TRUE, randCell on player grid, if compShots.includes(randCell) = true, restart function, else compShotCoordinate = randCell...
   // ELSE, compShotAfterHit()
   function cpuAttacks() {
+    time = 1150
     marker.play()
     if (cpuPreviousAttackHit < 0) {
       let targeting = true
@@ -549,12 +563,15 @@ function init() {
   function playerShipDestoredVisuals(iterate) {
     commentary.innerText = 'Oh no,\nMr. Potato Head\ndestroyed one of\nyour ships!'
     playerShipBtns[iterate].classList.add('destroyed')
+    if (playerHitsTaken.length > 6 && playerHitsTaken.length < 8) {
+      whatAreYouDoing.play()
+    }
   }
 
   function cpuWinCheck() {
     if (playerHitsTaken.length >= 13) {
       commentary.innerText = 'Mr. Potato Head\nhas destroyed all\nof your ships.\n\nDon\'t worry, you\'ll get him next time!'
-      loseAudio.play()
+      end.play()
       lockEnemyGrid()
     } else {
       playerTurn()

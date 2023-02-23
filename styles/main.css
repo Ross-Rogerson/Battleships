@@ -13,7 +13,8 @@ body {
   background-image: url(../assets/background.jpg);
   background-size: cover;
   background-position-y: bottom;
-  overflow: hidden;
+  min-width: 1400px;
+  min-height: 760px;
 }
 
 /* ! Header section */
