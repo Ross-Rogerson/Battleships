@@ -177,6 +177,19 @@ function init() {
       playerCells[index].classList.remove('miss')
       playerCells[index].classList.add('normal')
     }
+    unlockShipBtns()
+    clearShipDestroyedMarkers()
+    setTimeout(() => {
+      playerShipBtns.forEach(btn => btn.disabled = true)
+    }, 100)
+  }
+
+  function clearShipDestroyedMarkers() {
+    for (let i = 0; i < playerShipBtns.length; i++) {
+      playerShipBtns[i].classList.remove('destroyed')
+      enemyShipDivs[i].classList.remove('destroyed')
+      // playerShipBtns[i].classList.add('resetShipBtns')
+    }
   }
 
   function clearGridsAnimation() {
@@ -195,15 +208,13 @@ function init() {
       playerShipBtns.forEach(btn => btn.disabled = true)
       playerCells.forEach(btn => btn.disabled = true)
       cpuCells.forEach(btn => btn.disabled = true)
-    }, 100)
+    }, 200)
   }
 
   function enableStart() {
     setTimeout(() => {
       start.disabled = false
-      forfeit.disabled = true
-      reset.disabled = true
-    }, 100)
+    }, 2000)
   }
 
   function clearCellArrays() {
@@ -244,9 +255,8 @@ function init() {
   }
 
   function instructPlaceShips() {
-    commentary.innerText = 'Select a ship to begin!'
+    commentary.innerText = 'Select a ship and\nplace it on your\nEtch-A-Sketch\nto begin!'
   }
-
 
   function unlockShipBtns() {
     playerShipBtns.forEach(btn => btn.disabled = false)
@@ -290,7 +300,6 @@ function init() {
   function clearSelection() {
     cellsRequiredToPlace = []
   }
-
 
   function resetCurrentShip() {
     playerShipBtns[currentShipIndex].disabled
@@ -340,7 +349,6 @@ function init() {
       shipPlaced()
       resetCurrentShip()
       startBattle()
-
     } else if ((direction === 'left' || direction === 'right') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false &&
       sameLine(cellsRequiredToPlace)) {
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
@@ -356,6 +364,7 @@ function init() {
 
   function startBattle() {
     if (occupiedCellsPlayer.length === 13) {
+      commentary.innerText = 'Select a cell on\nMr. Potato Head\'s\nEtch-A-Sketch to\nstart the battle!'
       removeOutline()
       playerCells.forEach(btn => btn.disabled = true)
       unlockEnemyGrid()
@@ -417,14 +426,14 @@ function init() {
     //   commentary.innerText = 'Another one down - just one left!'
     // } else (
     // )
-    commentary.innerText = 'Nice work, you destoryed an enemy ship! Keep it up!'
+    commentary.innerText = 'Nice work, you destoryed one of\nMr. Potato Head\'s\nships! Keep it up!'
     enemyShipDivs[enemyShips.length - 1 - iterate].classList.add('destroyed')
   }
 
   function playerWinCheck() {
     if (cpuHitsTaken.length >= 13) {
       lockEnemyGrid()
-      commentary.innerText = 'That\'s all of them - you win!'
+      commentary.innerText = 'That\'s all of them - YOU WIN!'
     } else {
       cpuAttacks()
     }
@@ -460,7 +469,6 @@ function init() {
       coordinatedAttack()
     }
   }
-
 
   // ! Try adding variable for previous shot hit/miss and previous shot direction in below  function
   function coordinatedAttack() {
@@ -588,19 +596,18 @@ function init() {
     cpuPreviousAttackHit = -1
     currentAttackHits = []
     currentAttack = []
-    playerShipDestoredisuals(iterate)
+    playerShipDestoredVisuals(iterate)
   }
 
-  function playerShipDestoredisuals(iterate) {
-    commentary.innerText = 'Oh no, one of your ships has been destroyed!'
+  function playerShipDestoredVisuals(iterate) {
+    commentary.innerText = 'Oh no,\nMr. Potato Head\ndestroyed one of\nyour ships!'
     playerShipBtns[iterate].classList.add('destroyed')
   }
 
   function cpuWinCheck() {
     if (playerHitsTaken.length >= 13) {
-      forfeit.disabled = true
+      commentary.innerText = 'Mr. Potato Head\nhas destroyed all\nof your ships.\nYou\'ll get him next time!'
       lockEnemyGrid()
-      console.log('CPU Wins!')
     }
   }
 
