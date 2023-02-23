@@ -9,82 +9,8 @@ function init() {
 
   // enemyShips[], occupiedCellsCPU[], up, down, left, right
 
-  const cpuLargeBoat = {
-    name: 'large',
-    length: 4,
-    position: [],
-    hitsTaken: 0,
-  }
-  const cpuMediumBoat = {
-    name: 'medium',
-    length: 3,
-    position: [],
-    hitsTaken: 0,
-  }
-  const cpuMediumBoat2 = {
-    name: 'medium2',
-    length: 3,
-    position: [],
-    hitsTaken: 0,
-  }
-  const cpuSmallBoat = {
-    name: 'small',
-    length: 2,
-    position: [],
-    hitsTaken: 0,
-  }
-  const cpuXSmallBoat = {
-    name: 'xsmall',
-    length: 1,
-    position: [],
-    hitsTaken: 0,
-  }
-  const playerLargeBoat = {
-    name: 'large',
-    length: 4,
-    position: [],
-    hitsTaken: 0,
-  }
-  const playerMediumBoat = {
-    name: 'medium',
-    length: 3,
-    position: [],
-    hitsTaken: 0,
-  }
-  const playerMediumBoat2 = {
-    name: 'medium2',
-    length: 3,
-    position: 0,
-    hitsTaken: [],
-  }
-  const playerSmallBoat = {
-    name: 'small',
-    length: 2,
-    position: 0,
-    hitsTaken: [],
-  }
-  const playerXSmallBoat = {
-    name: 'xsmall',
-    length: 1,
-    position: [],
-    hitsTaken: 0,
-  }
-  const enemyShips = [cpuLargeBoat, cpuMediumBoat, cpuMediumBoat2, cpuSmallBoat, cpuXSmallBoat]
-  const playerShips = [playerLargeBoat, playerMediumBoat, playerMediumBoat2, playerSmallBoat, playerXSmallBoat]
-  const occupiedCellsCPU = []
-  const occupiedCellsPlayer = []
-  const unoccupiedCellsPlayer = []
-  const playerHitsTaken = []
-  const cpuHitsTaken = []
-  const playerMisses = []
-  const cpuMisses = []
-  const cpuPreviousAttacks = []
-  const playerGrid = document.querySelector('.playerGrid')
-  const cpuGrid = document.querySelector('.cpuGrid')
-  const commentary = document.querySelector('.commentary')
-  let currentAttackHits = []
-  let currentAttack = []
 
+  // ! Query Selectors
   const start = document.querySelector('.start')
   const reset = document.querySelector('.reset')
   const playerShipBtns = document.querySelectorAll('.playerShips Button')
@@ -94,11 +20,91 @@ function init() {
   const loseAudio = document.querySelector('.lose')
   const winAudio = document.querySelector('.win')
   const marker = document.querySelector('.markerAudio')
+  const playerGrid = document.querySelector('.playerGrid')
+  const cpuGrid = document.querySelector('.cpuGrid')
+  const commentary = document.querySelector('.commentary')
 
+  // ! Ship objects section
+
+  const cpuLargeShip = {
+    name: 'large',
+    length: 4,
+    position: [],
+    hitsTaken: 0,
+  }
+  const cpuMediumShip = {
+    name: 'medium',
+    length: 3,
+    position: [],
+    hitsTaken: 0,
+  }
+  const cpuMediumShip2 = {
+    name: 'medium2',
+    length: 3,
+    position: [],
+    hitsTaken: 0,
+  }
+  const cpuSmallShip = {
+    name: 'small',
+    length: 2,
+    position: [],
+    hitsTaken: 0,
+  }
+  const cpuXSmallShip = {
+    name: 'xsmall',
+    length: 1,
+    position: [],
+    hitsTaken: 0,
+  }
+  const playerLargeShip = {
+    name: 'large',
+    length: 4,
+    position: [],
+    hitsTaken: 0,
+  }
+  const playerMediumShip = {
+    name: 'medium',
+    length: 3,
+    position: [],
+    hitsTaken: 0,
+  }
+  const playerMediumShip2 = {
+    name: 'medium2',
+    length: 3,
+    position: 0,
+    hitsTaken: [],
+  }
+  const playerSmallShip = {
+    name: 'small',
+    length: 2,
+    position: 0,
+    hitsTaken: [],
+  }
+  const playerXSmallShip = {
+    name: 'xsmall',
+    length: 1,
+    position: [],
+    hitsTaken: 0,
+  }
+
+
+  // ! Constants
+  const enemyShips = [cpuLargeShip, cpuMediumShip, cpuMediumShip2, cpuSmallShip, cpuXSmallShip]
+  const playerShips = [playerLargeShip, playerMediumShip, playerMediumShip2, playerSmallShip, playerXSmallShip]
+  const occupiedCellsCPU = []
+  const occupiedCellsPlayer = []
+  const unoccupiedCellsPlayer = []
+  const playerHitsTaken = []
+  const cpuHitsTaken = []
+  const playerMisses = []
+  const cpuMisses = []
+  const cpuPreviousAttacks = []
   const width = 10
   const cellCount = width * width
   const playerCells = []
   const cpuCells = []
+  let currentAttackHits = []
+  let currentAttack = []
   let currentShip = {}
   let currentShipLength = 0
   let currentShipIndex = 0
@@ -110,9 +116,9 @@ function init() {
   let cpuAttackResult = true
   let cpuPreviousAttackHit = -1
   let cpuAttack = 0
-
   marker.volume = 0.05
 
+  // Create grids
   function createGrids() {
     for (let i = 0; i < cellCount; i++) {
       const cell = document.createElement('button')
@@ -325,6 +331,7 @@ function init() {
   function outlineCellsRequired() {
     for (let i = 0; i < cellsRequiredToPlace.length; i++) {
       const index = cellsRequiredToPlace[i]
+      // Stops cells on lines above/below highlighting when direction is right/left and ship is longer than the cells remaining on that row
       if ((direction === 'right' && parseInt(cellsRequiredToPlace[i]) % width < parseInt(cellsRequiredToPlace[0]) % width) ||
         (direction === 'left' && parseInt(cellsRequiredToPlace[i]) % width > parseInt(cellsRequiredToPlace[0]) % width)) {
         //
@@ -360,15 +367,15 @@ function init() {
       startBattle()
       console.log(occupiedCellsPlayer)
     } else if (occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === true) {
-      commentary.innerText = 'Hmm, we can\'t\nseem to draw this on your Etch-A-Sketch.\n\nRemember your\nships can\'t overlap.\n\nHave another go.'
+      commentary.innerText = 'Hmm, we can\'t\nseem to draw this on your\nEtch-A-Sketch.\n\nRemember your\nships can\'t overlap.'
     } else {
-      commentary.innerText = 'Uh-oh, your\nEtch-A-Sketch doesn\'t like that position.\n\nMake sure the whole ship is on the grid\nand try again.'
+      commentary.innerText = 'Uh-oh, your\nEtch-A-Sketch won\'t let you place the ship there.\n\nMake sure the whole ship is on the grid and try\nagain.'
     }
   }
 
   function startBattle() {
     if (occupiedCellsPlayer.length === 13) {
-      commentary.innerText = 'Select a cell on\nMr. Potato Head\'s\nEtch-A-Sketch to\nstart the battle!'
+      commentary.innerText = 'Click a cell on\nMr. Potato Head\'s\nEtch-A-Sketch to\nstart the battle!'
       removeOutline()
       playerCells.forEach(btn => btn.disabled = true)
       unlockEnemyGrid()
@@ -385,9 +392,11 @@ function init() {
   }
 
   function playerAttacks() {
+    if (cpuHitsTaken.length + playerMisses.length === 0) {
+      commentary.innerText = 'Let the battle begin!'
+    }
     playerAttack = parseInt(this.dataset.index)
     playerAttackResult = occupiedCellsCPU.includes(playerAttack)
-
     marker.play()
     updateTargetCell()
     lockEnemyGrid()
@@ -427,14 +436,9 @@ function init() {
   }
 
   function cpuShipDestroyed(iterate) {
-    // if (iterate === 1) {
-    //   commentary.innerText = 'Another one down - just one left!'
-    // } else (
-    // )
-    commentary.innerText = 'Nice work, you destoryed one of\nMr. Potato Head\'s\nships! Keep it up!'
+    commentary.innerText = 'You destroyed\none of Mr. Potato Head\'s ships!\n\nKeep up the good work!'
     enemyShipDivs[enemyShips.length - 1 - iterate].classList.add('destroyed')
   }
-
 
   function hitMarker(grid, cell) {
     grid[cell].classList.add('hitLine')
