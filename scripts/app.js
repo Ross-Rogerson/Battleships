@@ -89,6 +89,7 @@ function init() {
   const reset = document.querySelector('.reset')
   const forfeit = document.querySelector('.forfeit')
   const playerShipBtns = document.querySelectorAll('.playerShips Button')
+  const enemyShipDivs = document.querySelectorAll('.cpuShips Div')
   const playerGridContainer = document.querySelector('.playerComponents .gridContainer')
   const cpuGridContainer = document.querySelector('.cpuComponents .gridContainer')
   const audioclip = document.querySelector('.clip1')
@@ -400,7 +401,7 @@ function init() {
       if (foundIndexOfShipHit) {
         enemyShips[iterate].hitsTaken++
         if (enemyShips[iterate].hitsTaken >= parseInt(enemyShips[iterate].length)) {
-          console.log('ship destroyed')
+          cpuShipDestroyed(iterate)
           searching = false
         } else {
           searching = false
@@ -411,11 +412,19 @@ function init() {
     }
   }
 
+  function cpuShipDestroyed(iterate) {
+    // if (iterate === 1) {
+    //   commentary.innerText = 'Another one down - just one left!'
+    // } else (
+    // )
+    commentary.innerText = 'Nice work, you destoryed an enemy ship! Keep it up!'
+    enemyShipDivs[enemyShips.length - 1 - iterate].classList.add('destroyed')
+  }
+
   function playerWinCheck() {
     if (cpuHitsTaken.length >= 13) {
       lockEnemyGrid()
-      forfeit.disabled = true
-      console.log('Game Over')
+      commentary.innerText = 'That\'s all of them - you win!'
     } else {
       cpuAttacks()
     }
@@ -452,6 +461,8 @@ function init() {
     }
   }
 
+
+  // ! Try adding variable for previous shot hit/miss and previous shot direction in below  function
   function coordinatedAttack() {
     // If only one shot has hit on this attack, that hit was the prev shot fired and the cell above within grid and has not been trgted previously
     if (currentAttack.length === 1 && cpuPreviousAttackHit - width >= 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === false) {
@@ -562,7 +573,6 @@ function init() {
       if (foundIndexOfShipHit) {
         playerShips[iterate].hitsTaken++
         if (playerShips[iterate].hitsTaken >= parseInt(playerShips[iterate].length)) {
-          console.log('ship destroyed')
           playerShipDestroyed(iterate)
           searching = false
         } else {
