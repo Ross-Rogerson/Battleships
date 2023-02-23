@@ -91,7 +91,8 @@ function init() {
   const enemyShipDivs = document.querySelectorAll('.cpuShips Div')
   const playerGridContainer = document.querySelector('.playerComponents .gridContainer')
   const cpuGridContainer = document.querySelector('.cpuComponents .gridContainer')
-  const audioclip = document.querySelector('.clip1')
+  const loseAudio = document.querySelector('.lose')
+  const winAudio = document.querySelector('.win')
   const marker = document.querySelector('.markerAudio')
 
   const width = 10
@@ -109,6 +110,8 @@ function init() {
   let cpuAttackResult = true
   let cpuPreviousAttackHit = -1
   let cpuAttack = 0
+
+  marker.volume = 0.05
 
   function createGrids() {
     for (let i = 0; i < cellCount; i++) {
@@ -182,14 +185,13 @@ function init() {
     setTimeout(() => {
       playerShipBtns.forEach(btn => btn.disabled = true)
     }, 100)
-    commentary.innerText = 'Woody\nvs.\nMr. Potato Head!'
+    commentary.innerText = 'Woody\n\nvs.\n\nMr. Potato Head!'
   }
 
   function clearShipDestroyedMarkers() {
     for (let i = 0; i < playerShipBtns.length; i++) {
       playerShipBtns[i].classList.remove('destroyed')
       enemyShipDivs[i].classList.remove('destroyed')
-      // playerShipBtns[i].classList.add('resetShipBtns')
     }
   }
 
@@ -244,8 +246,6 @@ function init() {
   }
 
   // ! Executions
-  // ? Possibly use a timer to create a delay comp shot after player's shot
-
   // start() -> enable ship placement buttons
   function begin() {
     start.disabled = true
@@ -387,15 +387,16 @@ function init() {
   function playerAttacks() {
     playerAttack = parseInt(this.dataset.index)
     playerAttackResult = occupiedCellsCPU.includes(playerAttack)
+
     marker.play()
     updateTargetCell()
-    // lockEnemyGrid()
+    lockEnemyGrid()
   }
 
   function updateTargetCell() {
     cpuCells[playerAttack].classList.remove('normal')
     if (playerAttackResult) {
-      cpuCells[playerAttack].classList.add('hit')
+      hitMarker(cpuCells, playerAttack)
       cpuHitsTaken.push(playerAttack)
       shipDestroyedCheck()
       playerWinCheck()
@@ -404,7 +405,6 @@ function init() {
       playerMisses.push(playerAttack)
       cpuTurn()
     }
-    cpuCells[playerAttack].disabled = true
   }
 
   function shipDestroyedCheck() {
@@ -435,16 +435,34 @@ function init() {
     enemyShipDivs[enemyShips.length - 1 - iterate].classList.add('destroyed')
   }
 
+
+  function hitMarker(grid, cell) {
+    grid[cell].classList.add('hitLine')
+    setTimeout(() => {
+      grid[cell].classList.remove('hitLine')
+      grid[cell].classList.add('hit')
+    }, 200)
+  }
+
+  function missMarker(grid, cell) {
+    grid[cell].classList.add('missLine')
+    setTimeout(() => {
+      grid[cell].classList.remove('missLine')
+      grid[cell].classList.add('miss')
+    }, 200)
+  }
+
   function cpuTurn() {
     setTimeout(() => {
       cpuAttacks()
-    },1150)
+    }, 1150)
   }
 
   function playerWinCheck() {
     if (cpuHitsTaken.length >= 13) {
       lockEnemyGrid()
-      commentary.innerText = 'That\'s all of them - YOU WIN!'
+      winAudio.play()
+      commentary.innerText = 'That\'s all of them -\nYOU WIN!'
     } else {
       cpuTurn()
     }
@@ -463,6 +481,7 @@ function init() {
   // ELSE, compShotAfterHit()
   function cpuAttacks() {
     marker.play()
+    playerTurn()
     if (cpuPreviousAttackHit < 0) {
       let targeting = true
       while (targeting) {
@@ -479,6 +498,31 @@ function init() {
       }
     } else {
       coordinatedAttack()
+    }
+  }
+
+  function playerTurn() {
+    setTimeout(() => {
+      unlockEnemyGrid()
+    }, 1150)
+    setTimeout(() => {
+      disableTargetedCells()
+    }, 1151)
+  }
+
+  function disableTargetedCells() {
+    if (cpuHitsTaken.length > 0) {
+      for (let i = 0; i < cpuHitsTaken.length + playerMisses.length; i++) {
+        const index = cpuHitsTaken[i]
+        cpuCells[index].disabled = true
+      }
+    }
+    if (playerMisses > 0) {
+      for (let i = 0; i < playerMisses.length; i++) {
+        console.log(playerMisses[i])
+        const index = playerMisses[i]
+        cpuCells[index].disabled = true
+      }
     }
   }
 
@@ -544,7 +588,7 @@ function init() {
     playerCells[cpuAttack].classList.remove('normal')
     // if a hit (confirmed in coordinated attack function, above)
     if (cpuAttackResult) {
-      playerCells[cpuAttack].classList.add('hit')
+      hitMarker(playerCells, cpuAttack)
       currentAttackHits.push(cpuAttack)
       playerHitsTaken.push(cpuAttack)
       cpuPreviousAttackHit = cpuAttack
@@ -559,19 +603,11 @@ function init() {
     }
   }
 
-  function missMarker(grid, cell) {
-    grid[cell].classList.add('missLine')
-    setTimeout(() => {
-      grid[cell].classList.remove('missLine')
-      grid[cell].classList.add('miss')
-    }, 200)
-  }
-
   function updateFollowingCPUAttack() {
     playerCells[cpuAttack].classList.remove('normal')
     // if a hit (confirmed in coordinated attack function, above)
     if (cpuAttackResult) {
-      playerCells[cpuAttack].classList.add('hit')
+      hitMarker(playerCells, cpuAttack)
       currentAttackHits.push(cpuAttack)
       playerHitsTaken.push(cpuAttack)
       cpuPreviousAttackHit = cpuAttack
@@ -628,6 +664,7 @@ function init() {
     if (playerHitsTaken.length >= 13) {
       commentary.innerText = 'Mr. Potato Head\nhas destroyed all\nof your ships.\nYou\'ll get him next time!'
       lockEnemyGrid()
+      loseAudio.play()
     }
   }
 
@@ -814,7 +851,6 @@ function init() {
   cpuCells.forEach(btn => btn.disabled = true)
 
   playerCells.forEach(btn => btn.disabled = true)
-
 
   reset.addEventListener('click', clear)
   reset.disabled = true

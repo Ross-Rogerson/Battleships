@@ -147,8 +147,20 @@ main {
   flex-grow: 1;
   height: 10%;
   width: 10%;
-  background-image: url(../assets/red-marker.png);
-  background-size: 40%;
+  background-image: url(../assets/red-cross.png);
+  background-size: 65%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
+}
+
+.hitLine {
+  border: 1px solid lightslategray;
+  flex-grow: 1;
+  height: 10%;
+  width: 10%;
+  background-image: url(../assets/red-line.png);
+  background-size: 65%;
   background-position: center;
   background-repeat: no-repeat;
   color: transparent;
@@ -188,6 +200,10 @@ main {
   width: 10%;
   background-color: lightgray;
   color: slategray;
+}
+
+.cpuGrid Button:enabled {
+  cursor: pointer;
 }
 
 /* ! Setup buttons section */
