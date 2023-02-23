@@ -91,6 +91,8 @@ function init() {
   // ! Constants
   const enemyShips = [cpuLargeShip, cpuMediumShip, cpuMediumShip2, cpuSmallShip, cpuXSmallShip]
   const playerShips = [playerLargeShip, playerMediumShip, playerMediumShip2, playerSmallShip, playerXSmallShip]
+  const width = 10
+  const cellCount = width * width
   const occupiedCellsCPU = []
   const occupiedCellsPlayer = []
   const unoccupiedCellsPlayer = []
@@ -99,8 +101,6 @@ function init() {
   const playerMisses = []
   const cpuMisses = []
   const cpuPreviousAttacks = []
-  const width = 10
-  const cellCount = width * width
   const playerCells = []
   const cpuCells = []
   let currentAttackHits = []
@@ -406,7 +406,7 @@ function init() {
 
   function disableTargetedCells() {
     if (cpuHitsTaken.length > 0) {
-      for (let i = 0; i < cpuHitsTaken.length + playerMisses.length; i++) {
+      for (let i = 0; i < cpuHitsTaken.length; i++) {
         const index = cpuHitsTaken[i]
         cpuCells[index].disabled = true
       }
@@ -420,40 +420,52 @@ function init() {
     }
   }
 
-  // ! Try adding variable for previous shot hit/miss and previous shot direction in below  function
+  // ! Try adding variable for previous shot hit/miss and previous shot direction
   function coordinatedAttack() {
-    // If only one shot has hit on this attack, that hit was the prev shot fired and the cell above within grid and has not been trgted previously
+    const firstUp = cpuPreviousAttackHit - width
+    const nthUp = cpuPreviousAttackHit - width
+    const firstDown = currentAttackHits[0] + width
+    const nthDown = cpuPreviousAttackHit + width
+    const firstRight = currentAttackHits[0] + 1
+    const nthRight = cpuPreviousAttackHit + 1
+    const firstLeft = currentAttackHits[0] - 1
+    const nthLeft = cpuPreviousAttackHit - 1
+    let hitOrMiss
+    if (cpuPreviousAttacks[cpuPreviousAttacks.length - 1] === cpuPreviousAttackHit) {
+      hitOrMiss = 'hit'
+    } else {
+      hitOrMiss = 'miss'
+    }
+    // If only one shot has hit on this attack, that hit was the prev shot fired and the cell above within grid and has not been trgtd previously
     if (currentAttack.length === 1 && cpuPreviousAttackHit - width >= 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === false) {
       cpuAttack = cpuPreviousAttackHit - width
       // If prev shot was a hit, up, within grid and has not been trgted previously, try up again
     } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttackHits[currentAttackHits.length - 2] - currentAttackHits[currentAttackHits.length - 1] === 10 &&
       cpuPreviousAttackHit - width >= 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === false) {
-      cpuAttack = currentAttackHits[currentAttackHits.length - 1] - width
-      // If prev shot was up and a miss (a hit would have executed prev), the cell below is within the grid and not trgted previously OR prev shot was the 1st hit and up was invalid, try 1st down shot
+      cpuAttack = cpuPreviousAttackHit - width
+      // If prev shot was up and a miss (a hit would have executed prev), the cell below is within the grid and not trgtd previously OR prev shot was the 1st hit and up was invalid, try 1st down shot
     } else if (((currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1]) === 10 &&
       currentAttackHits[0] + width <= 99 && cpuPreviousAttacks.includes(currentAttackHits[0] + width) === false) || ((currentAttack.length === 1 &&
         (cpuPreviousAttackHit - width < 0 || cpuPreviousAttacks.includes(cpuPreviousAttackHit - width) === true)) &&
         currentAttackHits[0] + width <= 99 && cpuPreviousAttacks.includes(currentAttackHits[0] + width) === false)) {
       cpuAttack = currentAttackHits[0] + width
-      // If prev shot was down and a hit, the cell below is within the grid and not trgted previously, try another shot down
+      // If prev shot was down and a hit, the cell below is within the grid and not trgtd previously, try another shot down
     } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttackHits[currentAttackHits.length - 1] % width === currentAttackHits[currentAttackHits.length - 2] % width &&
       cpuPreviousAttackHit + width <= 99 && cpuPreviousAttacks.includes(cpuPreviousAttackHit + width) === false) {
-      cpuAttack = currentAttackHits[currentAttackHits.length - 1] + width
-      // If prev missed (hit would have executed above), down, cell+1 is on the same line as the orign hit and not already trgted OR prev shot was the 1st hit and down was invalid, try 1st shot to the right
+      cpuAttack = cpuPreviousAttackHit + width
+      // If prev missed (hit would have executed above), down, cell+1 is on the same line as the orign hit and not already trgtd OR prev shot was the 1st hit and down was invalid, try 1st shot to the right
     } else if ((Math.abs(currentAttack[currentAttack.length - 1] - currentAttack[currentAttack.length - 2]) >= 10 &&
       (currentAttackHits[0] + 1) % width <= 9 && cpuPreviousAttacks.includes(currentAttackHits[0] + 1) === false) || ((currentAttack.length === 1 &&
         (currentAttackHits[0] + width > 99 || cpuPreviousAttacks.includes(currentAttackHits[0] + width) === true)) &&
         (currentAttackHits[0] + 1) % width <= 9 && cpuPreviousAttacks.includes(currentAttackHits[0] + 1) === false)) {
       cpuAttack = currentAttackHits[0] + 1
-      // If prev shot was to the right and a hit and the cell to the right is on the same line and hasn't already been trgted, try right again
+      // If prev shot was to the right and a hit and the cell to the right is on the same line and hasn't already been trgtd, try right again
     } else if (currentAttack[currentAttack.length - 1] === cpuPreviousAttackHit && currentAttack[currentAttack.length - 1] - currentAttackHits[currentAttackHits.length - 2] === 1 &&
       (cpuPreviousAttackHit + 1) % width <= 9 && cpuPreviousAttacks.includes(cpuPreviousAttackHit + 1) === false) {
       cpuAttack = cpuPreviousAttackHit + 1
       // Only option remaining is left
-      // ! added below if statement, switched order of left options
     } else if (currentAttackHits[0] % width !== 0 && cpuPreviousAttacks.includes(currentAttackHits[0] - 1) === false) {
       cpuAttack = currentAttackHits[0] - 1
-      // !Added occupied checks to below conditional
     } else if ((currentAttack[currentAttack.length - 2] - currentAttack[currentAttack.length - 1] === 1 || currentAttackHits[0] - currentAttack[currentAttack.length - 1] === 1) &&
       cpuPreviousAttackHit - 1 % width !== 0 && cpuPreviousAttacks.includes(cpuPreviousAttackHit - 1) === false) {
       cpuAttack = cpuPreviousAttackHit - 1
@@ -844,7 +856,7 @@ function init() {
 
   populateUnoccupiedCellsPlayer()
 
-  // ! Events
+  // ! Event Listeners
 
   start.addEventListener('click', begin)
 
