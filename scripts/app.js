@@ -902,8 +902,10 @@ function init() {
     console.log('click')
     if (horn.volume === 0) {
       horn.volume = 0.2
+      mute.innerText = 'Mute'
     } else {
       horn.volume = 0
+      mute.innerText = 'Unmute'
     }
   }
   

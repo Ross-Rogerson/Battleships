@@ -224,7 +224,6 @@ main {
 }
 
 .setUp button {
-  width: 180px;
   border-radius: 10px;
   font-weight: bold;
 }
@@ -232,10 +231,11 @@ main {
 .start {
   height: 75px;
   margin-top: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 17px;
   background-color: rgb(14, 172, 14);
   font-size: 30px;
   color: white;
+  width: 180px;
 }
 
 .start:enabled {
@@ -244,9 +244,10 @@ main {
 
 .reset {
   height: 50px;
-  background-color: rgb(234, 234, 21);
+  background-color: #ffee15;
   font-size: 25px;
-  margin-bottom: 20px;
+  margin-bottom: 17px;
+  width: 180px;
 }
 
 .reset:enabled {
@@ -254,8 +255,8 @@ main {
 }
 
 .commentary {
-  margin-top: 16px;
-  margin-bottom: 25px;
+  /* margin-top: 16px; */
+  margin-bottom: 17px;
   padding: 5px;
   border: #1a48a0 solid 3px;
   height: 220px;
@@ -291,10 +292,12 @@ main {
 }
 
 .mute {
-  width: 50px;
-}
-
-.mute:enabled {
+  height: 50px;
+  width: 110px;
+  background-color: #1a48a0;
+  color: white;
+  font-size: 20px;
+  margin-bottom: 17px;
   cursor: pointer;
 }
 
