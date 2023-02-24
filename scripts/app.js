@@ -160,6 +160,7 @@ function init() {
   }
 
   function instructPlaceShips() {
+    commentary.classList.remove('initial')
     commentary.innerText = 'Select a ship and\nplace it on your\nEtch-A-Sketch\nto begin!'
   }
 
@@ -268,7 +269,7 @@ function init() {
     } else if (occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === true) {
       commentary.innerText = 'Hmm, Etch can\'t\nseem to draw this.\n\nRemember your\nships can\'t overlap.'
     } else {
-      commentary.innerText = 'Uh-oh,Etch won\'t\nlet you place the ship there.\n\nMake sure the whole ship is on the grid and try again.'
+      commentary.innerText = 'Uh-oh, Etch won\'t\nlet you place the ship there.\n\nMake sure the whole ship is on the grid and try again.'
     }
   }
 
@@ -800,7 +801,8 @@ function init() {
     setTimeout(() => {
       playerShipBtns.forEach(btn => btn.disabled = true)
     }, 100)
-    commentary.innerText = 'Woody\n\nvs.\n\nMr. Potato Head!'
+    commentary.classList.add('initial')
+    commentary.innerText = 'Press \'start\' to play again!'
   }
 
   // Removes destroyed ship class - part of reset
