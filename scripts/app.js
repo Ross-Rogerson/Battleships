@@ -567,7 +567,6 @@ function init() {
   function playerShipDestoredVisuals(iterate) {
     commentary.innerText = 'Oh no,\nMr. Potato Head\ndestroyed one of\nyour ships!'
     playerShipBtns[iterate].classList.add('destroyed')
-    playerShipBtns[iterate].classList.add('destroyed')
     playerShipBtns[iterate].classList.add('flash')
     setTimeout(() => {
       playerShipBtns[iterate].classList.remove('flash')

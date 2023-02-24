@@ -379,6 +379,11 @@ main {
 
 /* Larger than 13inch MacBook */
 @media (min-width: 1600px) {
+  body {
+    min-width: 1900px;
+    min-height: 760px;
+  }
+
   .playerAvatar {
     display: none;
   }
