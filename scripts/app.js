@@ -24,6 +24,7 @@ function init() {
   const startBtnSound = document.querySelector('.startBtnSound')
   const place = document.querySelector('.place')
   const whatAreYouDoing = document.querySelector('.what-are-you-doing')
+  const mute = document.querySelector('.mute')
   const playerGrid = document.querySelector('.playerGrid')
   const cpuGrid = document.querySelector('.cpuGrid')
   const commentary = document.querySelector('.commentary')
@@ -124,6 +125,7 @@ function init() {
   marker.volume = 0.1
   place.volume = 0.5
   horn.volume = 0.2
+  whatAreYouDoing.volume = 0.5
   startBtnSound.volume = 0.7
 
   // Create grids
@@ -233,7 +235,7 @@ function init() {
       const index = cellsRequiredToPlace[i]
       // Stops cells on lines above/below highlighting when direction is right/left and ship is longer than the cells remaining on that row
       if ((direction === 'right' && parseInt(cellsRequiredToPlace[i]) % width < parseInt(cellsRequiredToPlace[0]) % width) ||
-        (direction === 'left' && parseInt(cellsRequiredToPlace[i]) % width > parseInt(cellsRequiredToPlace[0]) % width)) {
+        (direction === 'left' && parseInt(cellsRequiredToPlace[i]) % width > parseInt(cellsRequiredToPlace[0]) % width) || index > 99 || index < 0) {
         //
       } else {
         playerCells[index].classList.remove('normal')
@@ -266,7 +268,6 @@ function init() {
       shipPlaced()
       resetCurrentShip()
       startBattle()
-      console.log(occupiedCellsPlayer)
     } else if (occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === true) {
       commentary.innerText = 'Hmm, Etch can\'t\nseem to draw this.\n\nRemember your\nships can\'t overlap.'
     } else {
@@ -599,7 +600,7 @@ function init() {
       horn.play()
     }
   }
-  
+
 
   function cpuWinCheck() {
     if (playerHitsTaken.length >= 13) {
@@ -895,16 +896,26 @@ function init() {
       start.disabled = false
     }, 1000)
   }
-
+  
+  // Mutes ship destroyed sounds
+  function noSound() {
+    console.log('click')
+    if (horn.volume === 0) {
+      horn.volume = 0.2
+    } else {
+      horn.volume = 0
+    }
+  }
+  
   // ! Page load
   createGrids()
-
+  
   populateUnoccupiedCellsPlayer()
-
+  
   // ! Event Listeners
-
+  
   start.addEventListener('click', begin)
-
+  
   playerCells.forEach(btn => {
     btn.addEventListener('click', placeShip)
     btn.addEventListener('mouseover', updateCurrentCell)
@@ -913,14 +924,16 @@ function init() {
     btn.addEventListener('mouseleave', clearSelection)
     btn.addEventListener('mouseleave', removeOutline)
   })
-
+  
   cpuCells.forEach(btn => {
     btn.addEventListener('click', playerAttacks)
   })
-
+  
   cpuCells.forEach(btn => btn.disabled = true)
-
+  
   playerCells.forEach(btn => btn.disabled = true)
+  
+  mute.addEventListener('click', noSound)
 
   reset.addEventListener('click', clear)
   reset.disabled = true

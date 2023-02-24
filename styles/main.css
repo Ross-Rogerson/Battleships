@@ -231,8 +231,8 @@ main {
 
 .start {
   height: 75px;
-  margin-top: 15px;
-  margin-bottom: 40px;
+  margin-top: 5px;
+  margin-bottom: 20px;
   background-color: rgb(14, 172, 14);
   font-size: 30px;
   color: white;
@@ -246,6 +246,7 @@ main {
   height: 50px;
   background-color: rgb(234, 234, 21);
   font-size: 25px;
+  margin-bottom: 20px;
 }
 
 .reset:enabled {
@@ -253,7 +254,7 @@ main {
 }
 
 .commentary {
-  margin-top: 40px;
+  margin-top: 16px;
   margin-bottom: 25px;
   padding: 5px;
   border: #1a48a0 solid 3px;
@@ -287,6 +288,14 @@ main {
   font-size: 26px;
   color: #1a48a0;
   background-color: #ffee15;
+}
+
+.mute {
+  width: 50px;
+}
+
+.mute:enabled {
+  cursor: pointer;
 }
 
 /* ! Ships section */
