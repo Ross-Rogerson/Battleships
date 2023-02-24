@@ -106,6 +106,7 @@ function init() {
   const cpuPreviousAttacks = []
   const playerCells = []
   const cpuCells = []
+  const cellsToPopulate = []
   let currentAttackHits = []
   let currentAttack = []
   let currentShip = {}
@@ -120,8 +121,8 @@ function init() {
   let cpuPreviousAttackHit = -1
   let cpuAttack = 0
   let time = 1150
-  marker.volume = 0.05
-  place.volume = 0.2
+  marker.volume = 0.1
+  place.volume = 0.5
   startBtnSound.volume = 0.7
 
   // Create grids
@@ -150,7 +151,6 @@ function init() {
   // ! Executions
   // start() -> enable ship placement buttons
   function begin() {
-    console.log('start')
     start.disabled = true
     reset.disabled = false
     placeCPUShips()
@@ -337,6 +337,10 @@ function init() {
   function cpuShipDestroyed(iterate) {
     commentary.innerText = 'You destroyed\none of Mr. Potato Head\'s ships!\n\nKeep up the good work!'
     enemyShipDivs[enemyShips.length - 1 - iterate].classList.add('destroyed')
+    enemyShipDivs[enemyShips.length - 1 - iterate].classList.add('flash')
+    setTimeout(() => {
+      enemyShipDivs[enemyShips.length - 1 - iterate].classList.remove('flash')
+    }, 2000)
     if (cpuHitsTaken.length > 6 && cpuHitsTaken.length < 8) {
       toy.play()
       time = 4000
@@ -563,6 +567,11 @@ function init() {
   function playerShipDestoredVisuals(iterate) {
     commentary.innerText = 'Oh no,\nMr. Potato Head\ndestroyed one of\nyour ships!'
     playerShipBtns[iterate].classList.add('destroyed')
+    playerShipBtns[iterate].classList.add('destroyed')
+    playerShipBtns[iterate].classList.add('flash')
+    setTimeout(() => {
+      playerShipBtns[iterate].classList.remove('flash')
+    }, 2000)
     if (playerHitsTaken.length > 6 && playerHitsTaken.length < 8) {
       whatAreYouDoing.play()
     }
