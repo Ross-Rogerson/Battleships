@@ -275,6 +275,20 @@ main {
   color: #1a48a0;
 }
 
+.loseMessage {
+  font-size: 18px;
+  background-color: rgb(212, 0, 0);
+  border: 2px solid white;
+  color: white;
+  font-weight: lighter;
+}
+
+.winMessage {
+  font-size: 26px;
+  color: #1a48a0;
+  background-color: #ffee15;
+}
+
 /* ! Ships section */
 
 .nameBar {

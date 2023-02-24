@@ -20,6 +20,7 @@ function init() {
   const end = document.querySelector('.end')
   const toy = document.querySelector('.TOY')
   const marker = document.querySelector('.markerAudio')
+  const horn = document.querySelector('.horn')
   const startBtnSound = document.querySelector('.startBtnSound')
   const place = document.querySelector('.place')
   const whatAreYouDoing = document.querySelector('.what-are-you-doing')
@@ -106,7 +107,6 @@ function init() {
   const cpuPreviousAttacks = []
   const playerCells = []
   const cpuCells = []
-  const cellsToPopulate = []
   let currentAttackHits = []
   let currentAttack = []
   let currentShip = {}
@@ -123,6 +123,7 @@ function init() {
   let time = 1150
   marker.volume = 0.1
   place.volume = 0.5
+  horn.volume = 0.2
   startBtnSound.volume = 0.7
 
   // Create grids
@@ -342,10 +343,21 @@ function init() {
     setTimeout(() => {
       enemyShipDivs[enemyShips.length - 1 - iterate].classList.remove('flash')
     }, 2000)
-    if (cpuHitsTaken.length > 6 && cpuHitsTaken.length < 8) {
+
+    let count = 0
+    for (let i = 0; i < enemyShips.length; i++) {
+      if (enemyShipDivs[i].classList.contains('destroyed')) {
+        count++
+      }
+    }
+
+    if (count === 3) {
       toy.play()
       time = 4000
+    } else {
+      horn.play()
     }
+
   }
 
   function hitMarker(grid, cell) {
@@ -373,7 +385,8 @@ function init() {
   function playerWinCheck() {
     if (cpuHitsTaken.length >= 13) {
       end.play()
-      commentary.innerText = 'That\'s all of them -\nYOU WIN!'
+      commentary.innerText = 'That\'s his last ship!\n\n You win!'
+      commentary.classList.add('winMessage')
       lockEnemyGrid()
     } else {
       cpuTurn()
@@ -572,14 +585,26 @@ function init() {
     setTimeout(() => {
       playerShipBtns[iterate].classList.remove('flash')
     }, 2000)
-    if (playerHitsTaken.length > 6 && playerHitsTaken.length < 8) {
+
+    let count = 0
+    for (let i = 0; i < playerShips.length; i++) {
+      if (playerShipBtns[i].classList.contains('destroyed')) {
+        count++
+      }
+    }
+
+    if (count === 3) {
       whatAreYouDoing.play()
+    } else {
+      horn.play()
     }
   }
+  
 
   function cpuWinCheck() {
     if (playerHitsTaken.length >= 13) {
-      commentary.innerText = 'Mr. Potato Head\nhas destroyed all\nof your ships.\n\nDon\'t worry, you\'ll get him next time!'
+      commentary.classList.add('loseMessage')
+      commentary.innerText = 'Uh-oh, that was your last ship.\n\nYou lost!\n\nDon\'t worry, you\'ll get him next time!'
       end.play()
       lockEnemyGrid()
     } else {
@@ -755,6 +780,9 @@ function init() {
 
   // Resets game
   function clear() {
+    commentary.classList.remove('loseMessage')
+    commentary.classList.remove('winMessage')
+    commentary.classList.add('initial')
     clearGrids()
     clearGridsAnimation()
     resetCPUShips()
@@ -801,8 +829,7 @@ function init() {
     setTimeout(() => {
       playerShipBtns.forEach(btn => btn.disabled = true)
     }, 100)
-    commentary.classList.add('initial')
-    commentary.innerText = 'Press \'start\' to play again!'
+    commentary.innerText = 'Press \'Start\' to play again!'
   }
 
   // Removes destroyed ship class - part of reset
