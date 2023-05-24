@@ -1,14 +1,4 @@
 function init() {
-  // Variables
-  // QuerySelectors: grids, playerShips, enemyShips, commentary(may contain images), start button, reset button, forfeit button
-  // width, cellCount, occupiedCellsPlayer[], shipsPlayer/Comp[] containing objects for each 
-  // ship {name, length, position[], destroyed?} compShots[], playerShots[], computer/playerShipsRemaining, shipsPlaced[]
-  // let currentCellComp(rand)/Player(clicked), up, down, left, right, player/compPreviousShotHit = (-1 if missed, or ship was...
-  // detroyed) compShotAfterHitOptions = []
-  // let randIndex, let randCell, let compShotCoordinate
-
-  // enemyShips[], occupiedCellsCPU[], up, down, left, right
-
 
   // ! Query Selectors
   const start = document.querySelector('.start')
@@ -149,8 +139,6 @@ function init() {
     }
   }
 
-
-
   // ! Executions
   // start() -> enable ship placement buttons
   function begin() {
@@ -162,19 +150,23 @@ function init() {
     startBtnSound.play()
   }
 
+  // Message on commentary board
   function instructPlaceShips() {
     commentary.classList.remove('initial')
     commentary.innerText = 'Select a ship and\nplace it on your\nEtch-A-Sketch\nto begin!'
   }
 
+  // Enables buttons in player ships section
   function unlockShipBtns() {
     playerShipBtns.forEach(btn => btn.disabled = false)
   }
 
+  // Unlocks the player's board
   function unlockPlayerGrid() {
     playerCells.forEach(btn => btn.disabled = false)
   }
 
+  // Rotates the ships
   function rotate(e) {
     if (e.keyCode === 82 && direction === 'down') {
       cellsRequiredToPlace = []
@@ -195,10 +187,12 @@ function init() {
     }
   }
 
+  // Updates a variable based on cell hover
   function updateCurrentCell() {
     currentCell = parseInt(this.dataset.index)
   }
 
+  // Updates variables based on the ship the player selects
   function selectShip() {
     currentShipIndex = parseInt(this.value) - 1
     currentShip = playerShips[currentShipIndex]
@@ -206,10 +200,12 @@ function init() {
     unlockPlayerGrid()
   }
 
+  // Clears the cells required to place variable as mouse leaves cell
   function clearSelection() {
     cellsRequiredToPlace = []
   }
 
+  // Resets variables after the player has placed a ship
   function resetCurrentShip() {
     playerShipBtns[currentShipIndex].disabled
     currentShip = {}
@@ -218,6 +214,7 @@ function init() {
     cellsRequiredToPlace = []
   }
 
+  // Changes cells required as player hovers over a cell
   function updateCellsRequired() {
     if (direction === 'down') {
       requiredCellsDown(currentCell, currentShipLength, cellsRequiredToPlace)
@@ -230,6 +227,7 @@ function init() {
     }
   }
 
+  // Outlines the cells the ship would populate
   function outlineCellsRequired() {
     for (let i = 0; i < cellsRequiredToPlace.length; i++) {
       const index = cellsRequiredToPlace[i]
@@ -244,6 +242,7 @@ function init() {
     }
   }
 
+  // Removes the outline on mouse leave
   function removeOutline() {
     for (let i = 0; i < unoccupiedCellsPlayer.length; i++) {
       const index = unoccupiedCellsPlayer[i]
@@ -252,6 +251,7 @@ function init() {
     }
   }
 
+  // Updates variables when the player has selected a viable position for the ship
   function placeShip() {
     if ((direction === 'up' || direction === 'down') && withinLowerLimit(cellsRequiredToPlace) && withinUpperLimit(cellsRequiredToPlace) && occupiedCheck(cellsRequiredToPlace, occupiedCellsPlayer) === false) {
       pushToPlayerArrays(cellsRequiredToPlace, currentShipIndex)
@@ -275,6 +275,7 @@ function init() {
     }
   }
 
+  // Enables enemy grid buttons when all ships have been placed
   function startBattle() {
     if (occupiedCellsPlayer.length === 13) {
       commentary.innerText = 'Click a cell on\nMr. Potato Head\'s\nEtch-A-Sketch to\nstart the battle!'
@@ -284,6 +285,7 @@ function init() {
     }
   }
 
+  // Visual changes when ship has been placed
   function shipPlaced() {
     for (let i = 0; i < cellsRequiredToPlace.length; i++) {
       const index = cellsRequiredToPlace[i]
@@ -293,6 +295,7 @@ function init() {
     }
   }
 
+  // Initiates sequence of functions when the player attacks
   function playerAttacks() {
     if (cpuHitsTaken.length + playerMisses.length === 0) {
       commentary.innerText = 'Let the battle begin!'
@@ -304,6 +307,7 @@ function init() {
     lockEnemyGrid()
   }
 
+  // Initiates sequence of functions that make changes to the cell targetted by the player
   function updateTargetCell() {
     cpuCells[playerAttack].classList.remove('normal')
     if (playerAttackResult) {
@@ -318,6 +322,7 @@ function init() {
     }
   }
 
+  // Checks if a ship was destroyed on the attack and makes changes to the cells based on the result of the attack
   function shipDestroyedCheck() {
     let searching = true
     let iterate = 0
@@ -337,6 +342,7 @@ function init() {
     }
   }
 
+  // Visual effects if a ship is destroyed
   function cpuShipDestroyed(iterate) {
     commentary.innerText = 'You destroyed\none of Mr. Potato Head\'s ships!\n\nKeep up the good work!'
     enemyShipDivs[enemyShips.length - 1 - iterate].classList.add('destroyed')
@@ -361,6 +367,7 @@ function init() {
 
   }
 
+  // Changes a cell if it was a hit
   function hitMarker(grid, cell) {
     grid[cell].classList.add('hitLine')
     setTimeout(() => {
@@ -369,6 +376,7 @@ function init() {
     }, 200)
   }
 
+  // Changes a cell if it was a miss
   function missMarker(grid, cell) {
     grid[cell].classList.add('missLine')
     setTimeout(() => {
@@ -377,12 +385,14 @@ function init() {
     }, 200)
   }
 
+  // Delays cpu turn based on audio to be played
   function cpuTurn() {
     setTimeout(() => {
       cpuAttacks()
     }, time)
   }
 
+  // Checks if the player has won
   function playerWinCheck() {
     if (cpuHitsTaken.length >= 13) {
       end.play()
@@ -394,15 +404,12 @@ function init() {
     }
   }
 
+  // Unlocks CPU grid
   function unlockEnemyGrid() {
     cpuCells.forEach(btn => btn.disabled = false)
   }
 
-
-
-  // computerShoots() if compPreviousShotHit < 0
-  // TRUE, randCell on player grid, if compShots.includes(randCell) = true, restart function, else compShotCoordinate = randCell...
-  // ELSE, compShotAfterHit()
+  // Checks if the previous CPU shot was a hit or miss and inities sequence of functions
   function cpuAttacks() {
     time = 1150
     marker.play()
@@ -425,6 +432,7 @@ function init() {
     }
   }
 
+  // Delay before player turn after CPU attack
   function playerTurn() {
     setTimeout(() => {
       unlockEnemyGrid()
@@ -434,6 +442,7 @@ function init() {
     }, 1151)
   }
 
+  // Disables cells the player has already attacked
   function disableTargetedCells() {
     if (cpuHitsTaken.length > 0) {
       for (let i = 0; i < cpuHitsTaken.length; i++) {
@@ -449,7 +458,7 @@ function init() {
     }
   }
 
-  // ! Try adding variable for previous shot hit/miss and previous shot direction
+  // CPU attack based on previous hit
   function coordinatedAttack() {
     const firstUp = currentAttackHits[0] - width
     const nthUp = cpuPreviousAttackHit - width
@@ -510,6 +519,7 @@ function init() {
     updateFollowingCPUAttack()
   }
 
+  // Updates variables based on hit
   function updateAfterFirstAttackHit() {
     playerCells[cpuAttack].classList.remove('normal')
     // if a hit (confirmed in coordinated attack function, above)
@@ -529,6 +539,7 @@ function init() {
     }
   }
 
+  // Updates variables based on hit
   function updateFollowingCPUAttack() {
     playerCells[cpuAttack].classList.remove('normal')
     // if a hit (confirmed in coordinated attack function, above)
@@ -547,12 +558,14 @@ function init() {
     }
   }
 
+  // Updates variable if first hit on an attack
   function ifFirstHitUpdateCurrentAttack() {
     if (currentAttack.length === 0) {
       currentAttack.push(cpuAttack)
     }
   }
 
+  // Checks for player ship destroyed
   function playerShipDestroyedCheck() {
     let searching = true
     let iterate = 0
@@ -572,6 +585,7 @@ function init() {
     }
   }
 
+  // Updates variables if player ship destroyed
   function playerShipDestroyed(iterate) {
     cpuPreviousAttackHit = -1
     currentAttackHits = []
@@ -579,6 +593,7 @@ function init() {
     playerShipDestoredVisuals(iterate)
   }
 
+  // Visual changes if player ship destroyed
   function playerShipDestoredVisuals(iterate) {
     commentary.innerText = 'Oh no,\nMr. Potato Head\ndestroyed one of\nyour ships!'
     playerShipBtns[iterate].classList.add('destroyed')
@@ -601,7 +616,7 @@ function init() {
     }
   }
 
-
+  // Checks for CPU win
   function cpuWinCheck() {
     if (playerHitsTaken.length >= 13) {
       commentary.classList.add('loseMessage')
@@ -613,12 +628,12 @@ function init() {
     }
   }
 
+  // Locks CPU grid
   function lockEnemyGrid() {
     cpuCells.forEach(btn => btn.disabled = true)
   }
 
-  // placeCompShips() -> for loop iterating through compShips[], place in + to - order, random number generated to choose first 
-  // cell to try, checks if available by searching occupiedCellsComputer[]...
+  // Places CPU ships
   function placeCPUShips() {
     for (let i = 0; i < 5; i++) {
       const shipSize = parseInt(enemyShips[i].length)
@@ -896,7 +911,7 @@ function init() {
       start.disabled = false
     }, 1000)
   }
-  
+
   // Mutes ship destroyed sounds
   function noSound() {
     console.log('click')
@@ -908,16 +923,16 @@ function init() {
       mute.innerText = 'Unmute'
     }
   }
-  
+
   // ! Page load
   createGrids()
-  
+
   populateUnoccupiedCellsPlayer()
-  
+
   // ! Event Listeners
-  
+
   start.addEventListener('click', begin)
-  
+
   playerCells.forEach(btn => {
     btn.addEventListener('click', placeShip)
     btn.addEventListener('mouseover', updateCurrentCell)
@@ -926,15 +941,15 @@ function init() {
     btn.addEventListener('mouseleave', clearSelection)
     btn.addEventListener('mouseleave', removeOutline)
   })
-  
+
   cpuCells.forEach(btn => {
     btn.addEventListener('click', playerAttacks)
   })
-  
+
   cpuCells.forEach(btn => btn.disabled = true)
-  
+
   playerCells.forEach(btn => btn.disabled = true)
-  
+
   mute.addEventListener('click', noSound)
 
   reset.addEventListener('click', clear)
